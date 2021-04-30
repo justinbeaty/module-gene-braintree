@@ -1,4 +1,7 @@
 {
     "name": "gene/braintree",
-    "type": "magento-module"
+    "type": "magento-module",
+    "require": {
+        "braintree/braintree_php": "3.23.0"
+    }
 }

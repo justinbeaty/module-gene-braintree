@@ -226,38 +226,6 @@ class Gene_Braintree_Model_Observer
     }
 
     /**
-     * Check if compilation is enabled, if so copy over the certificates
-     *
-     * @return $this
-     */
-    public function checkCompilation()
-    {
-        // Determine whether the compiler has been enabled
-        if(defined('COMPILER_INCLUDE_PATH')) {
-            $certificates = array('api_braintreegateway_com.ca.crt');
-            $compilerPath = COMPILER_INCLUDE_PATH;
-            $directory = 'Braintree' . DS . 'braintree' . DS . 'braintree_php' . DS . 'lib' . DS . 'ssl' . DS;
-
-            // Verify the SSL folder exists
-            if(!is_dir($compilerPath . DS . '..' . DS . $directory)) {
-                mkdir($compilerPath . DS . '..' . DS . $directory, 0777, true);
-            }
-
-            // Loop through each certificate and check whether it's in the includes directory, if not copy it!
-            foreach($certificates as $file) {
-                if(!file_exists($compilerPath . DS . '..' . DS . $directory . $file)) {
-                    copy(
-                        Mage::getBaseDir('lib') . DS . 'Gene' . DS . $directory . $file,
-                        $compilerPath . DS . '..' . DS . $directory . $file
-                    );
-                }
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * Unregister the original token from the request
      *
      * @return $this
@@ -291,23 +259,4 @@ class Gene_Braintree_Model_Observer
         return $this;
     }
 
-    /**
-     * Add the include path to the Gene/Braintree library folder
-     *
-     * @return $this
-     */
-    public function addIncludePath()
-    {
-        self::initIncludePath();
-
-        return $this;
-    }
-
-    /**
-     * Add the include path needed for the new location of the SDK
-     */
-    public static function initIncludePath()
-    {
-        require_once Mage::getBaseDir('lib') . DS . 'Gene' . DS . 'Braintree' . DS . 'braintree' . DS . 'braintree_php' . DS . 'vendor' . DS . 'autoload.php';
-    }
 }

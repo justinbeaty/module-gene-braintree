@@ -56,14 +56,6 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
     protected $init = false;
 
     /**
-     * Ensure our include path is included correctly
-     */
-    protected function _construct()
-    {
-        Gene_Braintree_Model_Observer::initIncludePath();
-    }
-
-    /**
      * Setup the environment
      *
      * @param null $store

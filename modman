@@ -12,8 +12,6 @@ app/design/adminhtml/default/default/template/gene/braintree            app/desi
 app/design/adminhtml/default/default/layout/gene/braintree.xml            app/design/adminhtml/default/default/layout/gene/braintree.xml
 # js
 js/gene/braintree            js/gene/braintree
-# lib
-lib/Gene/Braintree            lib/Gene/Braintree
 # skin
 skin/frontend/base/default/images/gene/braintree            skin/frontend/base/default/images/gene/braintree
 skin/frontend/base/default/images/gene/loader-white.gif            skin/frontend/base/default/images/gene/loader-white.gif

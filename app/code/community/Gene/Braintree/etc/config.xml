@@ -87,19 +87,6 @@
             </assets_required>
         </payment>
 
-        <events>
-            <!-- Add an include path for the Braintree SDK -->
-            <controller_front_init_before>
-                <observers>
-                    <gene_braintree_include_path>
-                        <type>singleton</type>
-                        <class>gene_braintree/observer</class>
-                        <method>addIncludePath</method>
-                    </gene_braintree_include_path>
-                </observers>
-            </controller_front_init_before>
-        </events>
-
     </global>
 
     <!-- Default values for the system configuration pages -->
@@ -234,14 +221,14 @@
         </routers>
 
         <translate>
-            <modules>
-                <Gene_Braintree>
-                    <files>
-                        <default>Gene_Braintree.csv</default>
-                    </files>
-                </Gene_Braintree>
-            </modules>
-        </translate>
+            <modules>
+                <Gene_Braintree>
+                    <files>
+                        <default>Gene_Braintree.csv</default>
+                    </files>
+                </Gene_Braintree>
+            </modules>
+        </translate>
 
         <events>
             <checkout_submit_all_after>
@@ -306,14 +293,14 @@
         </layout>
 
         <translate>
-            <modules>
-                <Gene_Braintree>
-                    <files>
-                        <default>Gene_Braintree.csv</default>
-                    </files>
-                </Gene_Braintree>
-            </modules>
-        </translate>
+            <modules>
+                <Gene_Braintree>
+                    <files>
+                        <default>Gene_Braintree.csv</default>
+                    </files>
+                </Gene_Braintree>
+            </modules>
+        </translate>
 
         <events>
             <!-- Check whether we should capture the payment on shipment -->
@@ -325,16 +312,6 @@
                     </capture_braintree_payment>
                 </observers>
             </sales_order_shipment_save_after>
-
-            <!-- If the compilation mode is enabled copy over the SSL certificates -->
-            <controller_action_postdispatch>
-                <observers>
-                    <check_compilation>
-                        <class>gene_braintree/observer</class>
-                        <method>checkCompilation</method>
-                    </check_compilation>
-                </observers>
-            </controller_action_postdispatch>
 
             <core_block_abstract_to_html_before>
                 <observers>
