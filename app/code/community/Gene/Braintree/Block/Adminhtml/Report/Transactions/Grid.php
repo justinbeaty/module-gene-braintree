@@ -60,21 +60,21 @@ class Gene_Braintree_Block_Adminhtml_Report_Transactions_Grid extends Mage_Admin
         }
 
         // We always want to be filtering by a date to some degree
-        $searchArray[] = Braintree_TransactionSearch::createdAt()->between($from, $to);
+        $searchArray[] = Braintree\TransactionSearch::createdAt()->between($from, $to);
 
         // Type search
         if($type = Mage::app()->getRequest()->getParam('type')) {
-            $searchArray[] = Braintree_TransactionSearch::type()->is($type);
+            $searchArray[] = Braintree\TransactionSearch::type()->is($type);
         }
 
         // Allow searching upon the status
         if($status = Mage::app()->getRequest()->getParam('status')) {
-            $searchArray[] = Braintree_TransactionSearch::status()->is($status);
+            $searchArray[] = Braintree\TransactionSearch::status()->is($status);
         }
 
         // Order ID searching can be helpful
         if($orderId = Mage::app()->getRequest()->getParam('order_id')) {
-            $searchArray[] = Braintree_TransactionSearch::orderId()->is($orderId);
+            $searchArray[] = Braintree\TransactionSearch::orderId()->is($orderId);
         }
 
         // Store the search query within the session
@@ -100,11 +100,11 @@ class Gene_Braintree_Block_Adminhtml_Report_Transactions_Grid extends Mage_Admin
         if($wrapper->validateCredentials()) {
 
             // Grab all transactions
-            $transactions = Braintree_Transaction::search($this->_prepareBraintreeSearchQuery());
+            $transactions = Braintree\Transaction::search($this->_prepareBraintreeSearchQuery());
 
             // Retrieve the order IDs
             $orderIds = array();
-            /* @var $transaction Braintree_Transaction */
+            /* @var $transaction Braintree\Transaction */
             foreach ($transactions as $transaction) {
                 $orderIds[] = $transaction->orderId;
             }
@@ -112,7 +112,7 @@ class Gene_Braintree_Block_Adminhtml_Report_Transactions_Grid extends Mage_Admin
             // Retrieve all of the orders from a collection
             $orders = Mage::getResourceModel('sales/order_collection')->addAttributeToFilter('increment_id', array('in' => $orderIds));
 
-            /* @var $transaction Braintree_Transaction */
+            /* @var $transaction Braintree\Transaction */
             foreach ($transactions as $transaction) {
                 $transaction = (array) $transaction;
                 $transaction = current($transaction);

@@ -61,7 +61,7 @@ class Gene_Braintree_Block_Saved_Edit extends Mage_Customer_Block_Address_Edit
         if (is_null($this->_address)) {
             $paymentMethod = $this->getPaymentMethod();
             if (isset($paymentMethod->billingAddress)) {
-                /* @var $billingAddress Braintree_Address */
+                /* @var $billingAddress Braintree\Address */
                 $billingAddress = $paymentMethod->billingAddress;
                 $this->_address = Mage::helper('gene_braintree')->convertToMagentoAddress($billingAddress);
             }

@@ -134,10 +134,10 @@ abstract class Gene_Braintree_Model_Paymentmethod_Abstract extends Mage_Payment_
             $transactionId = $this->_getWrapper()->getCleanTransactionId($invoice->getTransactionId());
 
             // Load the transaction from Braintree
-            $transaction = Braintree_Transaction::find($transactionId);
+            $transaction = Braintree\Transaction::find($transactionId);
 
             // If the transaction hasn't yet settled we can't do partial refunds
-            if ($transaction->status === Braintree_Transaction::SUBMITTED_FOR_SETTLEMENT) {
+            if ($transaction->status === Braintree\Transaction::SUBMITTED_FOR_SETTLEMENT) {
                 // If we're doing a partial refund and it's not settled it's a no go
                 if ($transaction->amount != $refundAmount) {
                     Mage::throwException(
@@ -148,16 +148,16 @@ abstract class Gene_Braintree_Model_Paymentmethod_Abstract extends Mage_Payment_
             }
 
             // Determine if the transaction is settled, or settling
-            if (($transaction->status == Braintree_Transaction::SETTLED ||
-                    $transaction->status == Braintree_Transaction::SETTLING) ||
+            if (($transaction->status == Braintree\Transaction::SETTLED ||
+                    $transaction->status == Braintree\Transaction::SETTLING) ||
                 (isset($transaction->paypal) &&
                     isset($transaction->paypal['paymentId']) &&
                     !empty($transaction->paypal['paymentId'])
                 )
             ) {
-                $result = Braintree_Transaction::refund($transactionId, $refundAmount);
+                $result = Braintree\Transaction::refund($transactionId, $refundAmount);
             } else {
-                $result = Braintree_Transaction::void($transactionId);
+                $result = Braintree\Transaction::void($transactionId);
             }
 
             // If it's a success close the transaction
@@ -224,16 +224,16 @@ abstract class Gene_Braintree_Model_Paymentmethod_Abstract extends Mage_Payment_
             $transactionId = $this->_getWrapper()->getCleanTransactionId($payment->getLastTransId());
 
             // Load the transaction from Braintree
-            $transaction = Braintree_Transaction::find($transactionId);
+            $transaction = Braintree\Transaction::find($transactionId);
 
             // We can only void authorized and submitted for settlement transactions
-            if ($transaction->status == Braintree_Transaction::AUTHORIZED ||
-                $transaction->status == Braintree_Transaction::SUBMITTED_FOR_SETTLEMENT
+            if ($transaction->status == Braintree\Transaction::AUTHORIZED ||
+                $transaction->status == Braintree\Transaction::SUBMITTED_FOR_SETTLEMENT
             ) {
-                $result = Braintree_Transaction::void($transactionId);
+                $result = Braintree\Transaction::void($transactionId);
             } else {
                 // If the transaction isn't voidable, refund it
-                $result = Braintree_Transaction::refund($transactionId);
+                $result = Braintree\Transaction::refund($transactionId);
             }
 
             // If it's a success close the transaction
@@ -348,10 +348,10 @@ abstract class Gene_Braintree_Model_Paymentmethod_Abstract extends Mage_Payment_
         } else {
             // The order has no invoice, let's void the payment directly
             $this->_getWrapper()->init();
-            $transaction = Braintree_Transaction::find($payment->getLastTransId());
-            if ($transaction->status == Braintree_Transaction::AUTHORIZED) {
+            $transaction = Braintree\Transaction::find($payment->getLastTransId());
+            if ($transaction->status == Braintree\Transaction::AUTHORIZED) {
                 try {
-                    Braintree_Transaction::void($payment->getLastTransId());
+                    Braintree\Transaction::void($payment->getLastTransId());
                     return true;
                 } catch (Exception $e) {
                     // Let's add the error into the session

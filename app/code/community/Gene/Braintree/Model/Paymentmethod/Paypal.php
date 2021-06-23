@@ -294,15 +294,15 @@ class Gene_Braintree_Model_Paymentmethod_Paypal extends Gene_Braintree_Model_Pay
             if ($lastTransactionId) {
                 try {
                     $this->_getWrapper()->init($payment->getOrder()->getStoreId());
-                    $transaction = Braintree_Transaction::find($lastTransactionId);
+                    $transaction = Braintree\Transaction::find($lastTransactionId);
 
                     // Has the transaction already been settled? or submitted for the settlement?
                     // Also treat settling transaction as being process. Case #828048
                     if (isset($transaction->id) &&
                         (
-                            $transaction->status == Braintree_Transaction::SUBMITTED_FOR_SETTLEMENT ||
-                            $transaction->status == Braintree_Transaction::SETTLED ||
-                            $transaction->status == Braintree_Transaction::SETTLING
+                            $transaction->status == Braintree\Transaction::SUBMITTED_FOR_SETTLEMENT ||
+                            $transaction->status == Braintree\Transaction::SETTLED ||
+                            $transaction->status == Braintree\Transaction::SETTLING
                         )
                     ) {
                         // Do the capture amounts match?
@@ -333,7 +333,7 @@ class Gene_Braintree_Model_Paymentmethod_Paypal extends Gene_Braintree_Model_Pay
                         $this->_getWrapper()->init($payment->getOrder()->getStoreId());
 
                         // Attempt to find the token
-                        Braintree_PaymentMethod::find($additionalInfoToken);
+                        Braintree\PaymentMethod::find($additionalInfoToken);
 
                         // Set the token if a success
                         $token = $additionalInfoToken;
@@ -479,7 +479,7 @@ class Gene_Braintree_Model_Paymentmethod_Paypal extends Gene_Braintree_Model_Pay
      * Process a successful result from the sale request
      *
      * @param Varien_Object               $payment
-     * @param Braintree_Result_Successful $result
+     * @param Braintree\Result\Successful $result
      * @param                             $amount
      *
      * @return Varien_Object

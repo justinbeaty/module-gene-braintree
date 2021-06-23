@@ -30,7 +30,7 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
     /**
      * Store the customer
      *
-     * @var Braintree_Customer
+     * @var Braintree\Customer
      */
     protected $_customer;
 
@@ -68,17 +68,17 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
 
             // Setup the various configuration variables
             $environment = Mage::getStoreConfig(self::BRAINTREE_ENVIRONMENT_PATH, $store);
-            Braintree_Configuration::environment($environment);
-            Braintree_Configuration::sslVersion(6);
+            Braintree\Configuration::environment($environment);
+            Braintree\Configuration::sslVersion(6);
 
             if ($environment == Gene_Braintree_Model_Source_Environment::PRODUCTION) {
-                Braintree_Configuration::merchantId(Mage::getStoreConfig(self::BRAINTREE_MERCHANT_ID_PATH, $store));
-                Braintree_Configuration::publicKey(Mage::getStoreConfig(self::BRAINTREE_PUBLIC_KEY_PATH, $store));
-                Braintree_Configuration::privateKey(Mage::getStoreConfig(self::BRAINTREE_PRIVATE_KEY_PATH, $store));
+                Braintree\Configuration::merchantId(Mage::getStoreConfig(self::BRAINTREE_MERCHANT_ID_PATH, $store));
+                Braintree\Configuration::publicKey(Mage::getStoreConfig(self::BRAINTREE_PUBLIC_KEY_PATH, $store));
+                Braintree\Configuration::privateKey(Mage::getStoreConfig(self::BRAINTREE_PRIVATE_KEY_PATH, $store));
             } else {
-                Braintree_Configuration::merchantId(Mage::getStoreConfig(self::BRAINTREE_SANDBOX_MERCHANT_ID_PATH, $store));
-                Braintree_Configuration::publicKey(Mage::getStoreConfig(self::BRAINTREE_SANDBOX_PUBLIC_KEY_PATH, $store));
-                Braintree_Configuration::privateKey(Mage::getStoreConfig(self::BRAINTREE_SANDBOX_PRIVATE_KEY_PATH, $store));
+                Braintree\Configuration::merchantId(Mage::getStoreConfig(self::BRAINTREE_SANDBOX_MERCHANT_ID_PATH, $store));
+                Braintree\Configuration::publicKey(Mage::getStoreConfig(self::BRAINTREE_SANDBOX_PUBLIC_KEY_PATH, $store));
+                Braintree\Configuration::privateKey(Mage::getStoreConfig(self::BRAINTREE_SANDBOX_PRIVATE_KEY_PATH, $store));
             }
 
             // Set our flag
@@ -97,7 +97,7 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
      */
     public function findTransaction($transactionId)
     {
-        return Braintree_Transaction::find($transactionId);
+        return Braintree\Transaction::find($transactionId);
     }
 
     /**
@@ -111,7 +111,7 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
     {
         $this->init();
 
-        $result = Braintree_PaymentMethodNonce::create($paymentMethodToken);
+        $result = Braintree\PaymentMethodNonce::create($paymentMethodToken);
 
         return $result->paymentMethodNonce->nonce;
     }
@@ -121,14 +121,14 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
      *
      * @param $braintreeCustomerId
      *
-     * @return Braintree_Customer
+     * @return Braintree\Customer
      */
     public function getCustomer($braintreeCustomerId)
     {
         // Try and load it from the customer
         if (!$this->_customer && !isset($this->_customer[$braintreeCustomerId])) {
             try {
-                $this->_customer[$braintreeCustomerId] = Braintree_Customer::find($braintreeCustomerId);
+                $this->_customer[$braintreeCustomerId] = Braintree\Customer::find($braintreeCustomerId);
             } catch (Exception $e) {
                 return false;
             }
@@ -163,7 +163,7 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
     public function generateToken()
     {
         // Use the class to generate the token
-        return Braintree_ClientToken::generate(
+        return Braintree\ClientToken::generate(
             array("merchantAccountId" => $this->getMerchantAccountId())
         );
     }
@@ -182,7 +182,7 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
         $customerId = Mage::getSingleton('customer/session')->getCustomer()->getBraintreeCustomerId();
 
         // Detect which type of payment method we've got here
-        if ($paymentMethod instanceof Braintree_PayPalAccount) {
+        if ($paymentMethod instanceof Braintree\PayPalAccount) {
 
             // Grab the customer
             $customer = $this->getCustomer($customerId);
@@ -193,7 +193,7 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
             // Check the customer has PayPal Accounts
             if (isset($customer->paypalAccounts)) {
 
-                /* @var $payPalAccount Braintree_PayPalAccount */
+                /* @var $payPalAccount Braintree\PayPalAccount */
                 foreach ($customer->paypalAccounts as $payPalAccount) {
                     if (isset($payPalAccount->token)) {
                         $customerTokens[] = $payPalAccount->token;
@@ -329,18 +329,18 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
                 if (Mage::app()->getStore()->isAdmin()) {
                     // Setup the various configuration variables
                     $environment = $this->getAdminConfigValue(self::BRAINTREE_ENVIRONMENT_PATH);
-                    Braintree_Configuration::environment($environment);
-                    Braintree_Configuration::sslVersion(6);
+                    Braintree\Configuration::environment($environment);
+                    Braintree\Configuration::sslVersion(6);
 
                     // Change logic based on environment
                     if ($environment == Gene_Braintree_Model_Source_Environment::PRODUCTION) {
-                        Braintree_Configuration::merchantId($this->getAdminConfigValue(self::BRAINTREE_MERCHANT_ID_PATH));
-                        Braintree_Configuration::publicKey($this->getAdminConfigValue(self::BRAINTREE_PUBLIC_KEY_PATH));
-                        Braintree_Configuration::privateKey($this->getAdminConfigValue(self::BRAINTREE_PRIVATE_KEY_PATH));
+                        Braintree\Configuration::merchantId($this->getAdminConfigValue(self::BRAINTREE_MERCHANT_ID_PATH));
+                        Braintree\Configuration::publicKey($this->getAdminConfigValue(self::BRAINTREE_PUBLIC_KEY_PATH));
+                        Braintree\Configuration::privateKey($this->getAdminConfigValue(self::BRAINTREE_PRIVATE_KEY_PATH));
                     } else if ($environment == Gene_Braintree_Model_Source_Environment::SANDBOX) {
-                        Braintree_Configuration::merchantId($this->getAdminConfigValue(self::BRAINTREE_SANDBOX_MERCHANT_ID_PATH));
-                        Braintree_Configuration::publicKey($this->getAdminConfigValue(self::BRAINTREE_SANDBOX_PUBLIC_KEY_PATH));
-                        Braintree_Configuration::privateKey($this->getAdminConfigValue(self::BRAINTREE_SANDBOX_PRIVATE_KEY_PATH));
+                        Braintree\Configuration::merchantId($this->getAdminConfigValue(self::BRAINTREE_SANDBOX_MERCHANT_ID_PATH));
+                        Braintree\Configuration::publicKey($this->getAdminConfigValue(self::BRAINTREE_SANDBOX_PUBLIC_KEY_PATH));
+                        Braintree\Configuration::privateKey($this->getAdminConfigValue(self::BRAINTREE_SANDBOX_PRIVATE_KEY_PATH));
                     } else {
                         return $this->_updateApiStatus(false);
                     }
@@ -350,7 +350,7 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
             }
 
             // Attempt to retrieve the gateway plans to check
-            Braintree_ClientToken::generate();
+            Braintree\ClientToken::generate();
 
         } catch (Exception $e) {
             // Do we want to rethrow the exception?
@@ -387,7 +387,7 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
 
         // Validate the merchant account ID
         try {
-            Braintree_Configuration::gateway()->merchantAccount()->find($merchantAccountId);
+            Braintree\Configuration::gateway()->merchantAccount()->find($merchantAccountId);
         } catch (Exception $e) {
             // Do we want to rethrow the exception?
             if ($throwException) {
@@ -424,7 +424,7 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
         // Check to see if it's been validated yet
         if (is_null($this->_validated)) {
             // Check the Braintree lib version is above 2.32, as this is when 3D secure appeared
-            if (Braintree_Version::get() < 2.32) {
+            if (Braintree\Version::get() < 2.32) {
                 $this->_validated = false;
             } else {
                 // Check that the module is fully setup
@@ -504,7 +504,7 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
         $paymentMethodCreate = $object->getAttributes();
 
         // Create a new billing method
-        return Braintree_PaymentMethod::create($paymentMethodCreate);
+        return Braintree\PaymentMethod::create($paymentMethodCreate);
     }
 
     /**
@@ -513,7 +513,7 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
      * @param $nonce
      * @param $billingAddress
      *
-     * @return \Braintree_Customer
+     * @return \Braintree\Customer
      */
     public function storeInGuestVault($nonce, $billingAddress = false)
     {
@@ -556,7 +556,7 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
         Mage::dispatchEvent('gene_braintree_store_in_guest_vault', array('object' => $object));
         $guestCustomerCreate = $object->getAttributes();
 
-        return Braintree_Customer::create($guestCustomerCreate);
+        return Braintree\Customer::create($guestCustomerCreate);
     }
 
     /**
@@ -694,17 +694,17 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
                 );
 
                 // Log the create array
-                Gene_Braintree_Model_Debug::log(array('Braintree_PaymentMethod' => $paymentMethodCreate));
+                Gene_Braintree_Model_Debug::log(array('Braintree\PaymentMethod' => $paymentMethodCreate));
 
                 // Create a new billing method
-                $result = Braintree_PaymentMethod::create($paymentMethodCreate);
+                $result = Braintree\PaymentMethod::create($paymentMethodCreate);
 
                 // Log the response from Braintree
-                Gene_Braintree_Model_Debug::log(array('Braintree_PaymentMethod:result' => $result));
+                Gene_Braintree_Model_Debug::log(array('Braintree\PaymentMethod:result' => $result));
 
                 // Verify the storing of the card was a success
                 if (isset($result->success) && $result->success == true) {
-                    /* @var $paymentMethod Braintree_CreditCard */
+                    /* @var $paymentMethod Braintree\CreditCard */
                     $paymentMethod = $result->paymentMethod;
                     // Check to see if the token is set
                     if (isset($paymentMethod->token) && !empty($paymentMethod->token)) {
@@ -816,7 +816,7 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
     {
         try {
             // Attempt to load the temporary payment method
-            $paymentMethod = Braintree_PaymentMethod::find($token);
+            $paymentMethod = Braintree\PaymentMethod::find($token);
             if (isset($paymentMethod->token) && $paymentMethod->token == $token) {
                 return true;
             }
@@ -835,7 +835,7 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
     public function makeSale($saleArray)
     {
         // Call the braintree library
-        return Braintree_Transaction::sale(
+        return Braintree\Transaction::sale(
             $saleArray
         );
     }
@@ -851,7 +851,7 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
     public function submitForSettlement($transactionId, $amount)
     {
         // Attempt to submit for settlement
-        $result = Braintree_Transaction::submitForSettlement($transactionId, $amount);
+        $result = Braintree\Transaction::submitForSettlement($transactionId, $amount);
 
         return $result;
     }
@@ -867,7 +867,7 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
     public function submitForPartialSettlement($transactionId, $amount)
     {
         // Attempt to submit for settlement
-        $result = Braintree_Transaction::submitForPartialSettlement($transactionId, $amount);
+        $result = Braintree\Transaction::submitForPartialSettlement($transactionId, $amount);
 
         return $result;
     }
@@ -1123,12 +1123,12 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
      *
      * @param $customerId
      *
-     * @return \Braintree_Result_Successful
+     * @return \Braintree\Result\Successful
      */
     public function deleteCustomer($customerId)
     {
         try {
-            return Braintree_Customer::delete($customerId);
+            return Braintree\Customer::delete($customerId);
         } catch (Exception $e) {
             Gene_Braintree_Model_Debug::log($e);
         }
@@ -1141,12 +1141,12 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
      *
      * @param $token
      *
-     * @return bool|\Braintree_Result_Successful
+     * @return bool|\Braintree\Result\Successful
      */
     public function deletePaymentMethod($token)
     {
         try {
-            return Braintree_PaymentMethod::delete($token);
+            return Braintree\PaymentMethod::delete($token);
         } catch (Exception $e) {
             Gene_Braintree_Model_Debug::log($e);
         }
@@ -1166,7 +1166,7 @@ class Gene_Braintree_Model_Wrapper_Braintree extends Mage_Core_Model_Abstract
     {
         // Attempt to clone the transaction
         try {
-            $result = Braintree_Transaction::cloneTransaction($transactionId, array(
+            $result = Braintree\Transaction::cloneTransaction($transactionId, array(
                 'amount'  => $amount,
                 'options' => array(
                     'submitForSettlement' => $submitForSettlement

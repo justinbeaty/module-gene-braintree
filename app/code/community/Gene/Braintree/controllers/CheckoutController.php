@@ -206,7 +206,7 @@ class Gene_Braintree_CheckoutController extends Mage_Core_Controller_Front_Actio
                 // Return a different message for declined cards
                 if (isset($response->transaction->status)) {
                     // Return a custom response for processor declined messages
-                    if ($response->transaction->status == Braintree_Transaction::PROCESSOR_DECLINED) {
+                    if ($response->transaction->status == Braintree\Transaction::PROCESSOR_DECLINED) {
                         return $this->_returnJson(array(
                             'success' => false,
                             'error'   => Mage::helper('gene_braintree')->__(

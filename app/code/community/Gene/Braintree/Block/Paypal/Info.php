@@ -52,7 +52,7 @@ class Gene_Braintree_Block_Paypal_Info extends Gene_Braintree_Block_Info
             }
 
             // If the additional information doens't contain certain data, than retrieve it from Braintree
-            if ($transaction && $transaction instanceof Braintree_Transaction) {
+            if ($transaction && $transaction instanceof Braintree\Transaction) {
                 if (!isset($data[$this->__('PayPal Email')]) && isset($transaction->paypalDetails->payerEmail)) {
                     $data[$this->__('PayPal Email')] = $transaction->paypalDetails->payerEmail;
                 }

@@ -35,8 +35,8 @@ class Gene_Braintree_Block_Adminhtml_System_Config_Braintree_Version
      */
     protected function getVersionHtml()
     {
-        if(@class_exists('Braintree_Version')) {
-            $version = Braintree_Version::get();
+        if(@class_exists('Braintree\Version')) {
+            $version = Braintree\Version::get();
             if ($version < 2.32) {
                 return '
                 <span style="color: red;">' . $version . '</span><br />

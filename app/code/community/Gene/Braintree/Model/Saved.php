@@ -101,11 +101,11 @@ class Gene_Braintree_Model_Saved extends Mage_Core_Model_Abstract
 
                 // Check which type we're after
                 if ($type == Gene_Braintree_Model_Saved::SAVED_CREDITCARD_ID) {
-                    if ($savedAccount instanceof Braintree_CreditCard) {
+                    if ($savedAccount instanceof Braintree\CreditCard) {
                         return true;
                     }
                 } elseif ($type == Gene_Braintree_Model_Saved::SAVED_PAYPAL_ID) {
-                    if ($savedAccount instanceof Braintree_PayPalAccount) {
+                    if ($savedAccount instanceof Braintree\PayPalAccount) {
                         return true;
                     }
                 }
@@ -137,11 +137,11 @@ class Gene_Braintree_Model_Saved extends Mage_Core_Model_Abstract
 
                 // Check which type we're after
                 if ($type == Gene_Braintree_Model_Saved::SAVED_CREDITCARD_ID) {
-                    if ($savedAccount instanceof Braintree_CreditCard) {
+                    if ($savedAccount instanceof Braintree\CreditCard) {
                         $savedDetails[] = $savedAccount;
                     }
                 } elseif ($type == Gene_Braintree_Model_Saved::SAVED_PAYPAL_ID) {
-                    if ($savedAccount instanceof Braintree_PayPalAccount) {
+                    if ($savedAccount instanceof Braintree\PayPalAccount) {
                         $savedDetails[] = $savedAccount;
                     }
                 }

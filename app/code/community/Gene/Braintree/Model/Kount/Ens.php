@@ -147,13 +147,13 @@ class Gene_Braintree_Model_Kount_Ens extends Mage_Core_Model_Abstract
                 $wrapper = Mage::getModel('gene_braintree/wrapper_braintree');
                 $wrapper->init($order->getStoreId());
 
-                $transaction = Braintree_Transaction::find($braintreeId);
+                $transaction = Braintree\Transaction::find($braintreeId);
                 if ($transaction->id) {
 
                     // If the transaction is yet to settle we can void the transaction in Braintree
-                    if ($transaction->status == Braintree_Transaction::AUTHORIZED || $transaction->status == Braintree_Transaction::SUBMITTED_FOR_SETTLEMENT) {
+                    if ($transaction->status == Braintree\Transaction::AUTHORIZED || $transaction->status == Braintree\Transaction::SUBMITTED_FOR_SETTLEMENT) {
                         return $this->_voidOrder($order);
-                    } else if ($transaction->status == Braintree_Transaction::SETTLED) {
+                    } else if ($transaction->status == Braintree\Transaction::SETTLED) {
                         return $this->_refundOrder($order);
                     }
                 }

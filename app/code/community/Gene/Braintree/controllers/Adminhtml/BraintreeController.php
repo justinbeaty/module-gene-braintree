@@ -99,19 +99,19 @@ class Gene_Braintree_Adminhtml_BraintreeController extends Mage_Adminhtml_Contro
                     $braintreeConfig['environment']['value'] == 'sandbox' && isset($braintreeConfig['sandbox_merchant_id']) && isset($braintreeConfig['sandbox_public_key']) && isset($braintreeConfig['sandbox_private_key']) ) {
 
                     // Setup the various configuration variables
-                    Braintree_Configuration::environment($braintreeConfig['environment']['value']);
-                    Braintree_Configuration::sslVersion(6);
+                    Braintree\Configuration::environment($braintreeConfig['environment']['value']);
+                    Braintree\Configuration::sslVersion(6);
 
                     // Production keys
                     if ($braintreeConfig['environment']['value'] == 'production') {
-                        Braintree_Configuration::merchantId($braintreeConfig['merchant_id']['value']);
-                        Braintree_Configuration::publicKey($braintreeConfig['public_key']['value']);
-                        Braintree_Configuration::privateKey($braintreeConfig['private_key']['value']);
+                        Braintree\Configuration::merchantId($braintreeConfig['merchant_id']['value']);
+                        Braintree\Configuration::publicKey($braintreeConfig['public_key']['value']);
+                        Braintree\Configuration::privateKey($braintreeConfig['private_key']['value']);
                         $merchantAccountId = (isset($braintreeConfig['merchant_account_id']['value']) ? $braintreeConfig['merchant_account_id']['value'] : false);
                     } else if ($braintreeConfig['environment']['value'] == 'sandbox') {
-                        Braintree_Configuration::merchantId($braintreeConfig['sandbox_merchant_id']['value']);
-                        Braintree_Configuration::publicKey($braintreeConfig['sandbox_public_key']['value']);
-                        Braintree_Configuration::privateKey($braintreeConfig['sandbox_private_key']['value']);
+                        Braintree\Configuration::merchantId($braintreeConfig['sandbox_merchant_id']['value']);
+                        Braintree\Configuration::publicKey($braintreeConfig['sandbox_public_key']['value']);
+                        Braintree\Configuration::privateKey($braintreeConfig['sandbox_private_key']['value']);
                         $merchantAccountId = (isset($braintreeConfig['sandbox_merchant_account_id']['value']) ? $braintreeConfig['sandbox_merchant_account_id']['value'] : false);
                     }
                 }

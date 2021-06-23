@@ -248,15 +248,15 @@ class Gene_Braintree_Model_Paymentmethod_Googlepay extends Gene_Braintree_Model_
             if ($lastTransactionId) {
                 try {
                     $this->_getWrapper()->init($payment->getOrder()->getStoreId());
-                    $transaction = Braintree_Transaction::find($lastTransactionId);
+                    $transaction = Braintree\Transaction::find($lastTransactionId);
                     // Has the transaction already been settled? or submitted for the settlement?
                     // Also treat settling transaction as being process. Case #828048
                     // Do the capture amounts match?
                     if (isset($transaction->id) &&
                         (
-                            $transaction->status === Braintree_Transaction::SUBMITTED_FOR_SETTLEMENT ||
-                            $transaction->status === Braintree_Transaction::SETTLED ||
-                            $transaction->status === Braintree_Transaction::SETTLING
+                            $transaction->status === Braintree\Transaction::SUBMITTED_FOR_SETTLEMENT ||
+                            $transaction->status === Braintree\Transaction::SETTLED ||
+                            $transaction->status === Braintree\Transaction::SETTLING
                         ) && $captureAmount === $transaction->amount
                     ) {
                         // We can just approve the invoice
@@ -278,7 +278,7 @@ class Gene_Braintree_Model_Paymentmethod_Googlepay extends Gene_Braintree_Model_
                         // Init the environment
                         $this->_getWrapper()->init($payment->getOrder()->getStoreId());
                         // Attempt to find the token
-                        Braintree_PaymentMethod::find($additionalInfoToken);
+                        Braintree\PaymentMethod::find($additionalInfoToken);
                         // Set the token if a success
                         $token = $additionalInfoToken;
                     } catch (Exception $e) {

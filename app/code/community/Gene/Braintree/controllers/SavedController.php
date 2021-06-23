@@ -65,7 +65,7 @@ class Gene_Braintree_SavedController extends Mage_Core_Controller_Front_Action
         }
 
         // Remove the payment method
-        Braintree_PaymentMethod::delete($paymentMethod->token);
+        Braintree\PaymentMethod::delete($paymentMethod->token);
 
         // Inform the user of the great news
         $this->_getSession()->addSuccess($this->__('Saved payment has been successfully deleted.'));
@@ -143,7 +143,7 @@ class Gene_Braintree_SavedController extends Mage_Core_Controller_Front_Action
 
         try {
             // Update the payment method
-            $result = Braintree_PaymentMethod::update($this->getRequest()->getParam('id'), $updateMethod);
+            $result = Braintree\PaymentMethod::update($this->getRequest()->getParam('id'), $updateMethod);
             if ($result->success == true) {
                 $this->_getSession()->addSuccess($this->__('The payment method has been updated successfully.'));
                 return $this->_redirect('*/*/index');
@@ -182,7 +182,7 @@ class Gene_Braintree_SavedController extends Mage_Core_Controller_Front_Action
 
         // Load the payment method from Braintree
         try {
-            $paymentMethod = Braintree_PaymentMethod::find($token);
+            $paymentMethod = Braintree\PaymentMethod::find($token);
         } catch (Exception $e) {
             $this->_getSession()->addError($this->__('The requested payment method cannot be found.'));
 

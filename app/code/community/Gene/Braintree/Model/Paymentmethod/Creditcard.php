@@ -360,15 +360,15 @@ class Gene_Braintree_Model_Paymentmethod_Creditcard extends Gene_Braintree_Model
             if ($lastTransactionId) {
                 try {
                     $this->_getWrapper()->init($payment->getOrder()->getStoreId());
-                    $transaction = Braintree_Transaction::find($lastTransactionId);
+                    $transaction = Braintree\Transaction::find($lastTransactionId);
 
                     // Has the transaction already been settled? or submitted for the settlement?
                     // Also treat settling transaction as being process. Case #828048
                     if (isset($transaction->id) &&
                         (
-                            $transaction->status == Braintree_Transaction::SUBMITTED_FOR_SETTLEMENT ||
-                            $transaction->status == Braintree_Transaction::SETTLED ||
-                            $transaction->status == Braintree_Transaction::SETTLING
+                            $transaction->status == Braintree\Transaction::SUBMITTED_FOR_SETTLEMENT ||
+                            $transaction->status == Braintree\Transaction::SETTLED ||
+                            $transaction->status == Braintree\Transaction::SETTLING
                         )
                     ) {
                         // Do the capture amounts match?
@@ -397,7 +397,7 @@ class Gene_Braintree_Model_Paymentmethod_Creditcard extends Gene_Braintree_Model
                         $this->_getWrapper()->init($payment->getOrder()->getStoreId());
 
                         // Attempt to find the token
-                        Braintree_PaymentMethod::find($additionalInfoToken);
+                        Braintree\PaymentMethod::find($additionalInfoToken);
 
                         // Set the token if a success
                         $token = $additionalInfoToken;
@@ -506,7 +506,7 @@ class Gene_Braintree_Model_Paymentmethod_Creditcard extends Gene_Braintree_Model
             // Return a different message for declined cards
             if (isset($result->transaction->status)) {
                 // Return a custom response for processor declined messages
-                if ($result->transaction->status == Braintree_Transaction::PROCESSOR_DECLINED) {
+                if ($result->transaction->status == Braintree\Transaction::PROCESSOR_DECLINED) {
                     return $this->_processFailedResult(
                         $this->_getHelper()->__(
                             'Your transaction has been declined, please try another payment method or contacting ' .
@@ -515,9 +515,9 @@ class Gene_Braintree_Model_Paymentmethod_Creditcard extends Gene_Braintree_Model
                         false,
                         $result
                     );
-                } elseif ($result->transaction->status == Braintree_Transaction::GATEWAY_REJECTED
+                } elseif ($result->transaction->status == Braintree\Transaction::GATEWAY_REJECTED
                     && isset($result->transaction->gatewayRejectionReason)
-                    && $result->transaction->gatewayRejectionReason == Braintree_Transaction::THREE_D_SECURE
+                    && $result->transaction->gatewayRejectionReason == Braintree\Transaction::THREE_D_SECURE
                 ) {
                     // An event for when 3D secure fails
                     Mage::dispatchEvent('gene_braintree_creditcard_failed_threed', array(
@@ -671,7 +671,7 @@ class Gene_Braintree_Model_Paymentmethod_Creditcard extends Gene_Braintree_Model
      * Processes successful authorize/clone result
      *
      * @param Varien_Object               $payment
-     * @param Braintree_Result_Successful $result
+     * @param Braintree\Result\Successful $result
      * @param float                       $amount
      *
      * @return Varien_Object
