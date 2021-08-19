@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<jstranslator>
+    <braintree-card-number translate="message" module="gene_braintree">
+        <message>Card Number</message>
+    </braintree-card-number>
+    <braintree-expiry-month translate="message" module="gene_braintree">
+        <message>Expiry Month</message>
+    </braintree-expiry-month>
+    <braintree-expiry-year translate="message" module="gene_braintree">
+        <message>Expiry Year</message>
+    </braintree-expiry-year>
+    <braintree-cvv translate="message" module="gene_braintree">
+        <message>CVV</message>
+    </braintree-cvv>
+    <braintree-is-invalid translate="message" module="gene_braintree">
+        <message>is invalid.</message>
+    </braintree-is-invalid>
+    <braintree-hosted-fields-error translate="message" module="gene_braintree">
+        <message>There are a number of errors present with the credit card form:</message>
+    </braintree-hosted-fields-error>
+    <braintree-threed-failed translate="message" module="gene_braintree">
+        <message>Your payment has failed 3D secure verification, please try an alternate payment method.</message>
+    </braintree-threed-failed>
+</jstranslator>
+

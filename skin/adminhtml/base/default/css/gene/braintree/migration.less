@@ -1,0 +1,222 @@
+#braintree-migration-overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    z-index: 10001;
+    opacity: 0;
+    visibility: hidden;
+
+    -moz-transition: opacity 0.4s ease-in-out;
+    -o-transition: opacity 0.4s ease-in-out;
+    -webkit-transition: opacity 0.4s ease-in-out;
+    transition: opacity 0.4s ease-in-out;
+
+    &.active {
+        visibility: visible;
+        opacity: 0.4;
+    }
+}
+
+#braintree-migration {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: 850px;
+    margin-top: -270px;
+    margin-left: -425px;
+    background: #303032;
+    z-index: 10002;
+    opacity: 0;
+    visibility: hidden;
+
+    -webkit-border-radius: 10px;
+    -webkit-border-bottom-right-radius: 3px;
+    -webkit-border-bottom-left-radius: 3px;
+    -moz-border-radius: 10px;
+    -moz-border-radius-bottomright: 3px;
+    -moz-border-radius-bottomleft: 3px;
+    border-radius: 10px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+
+    transform: translateY(20%);
+
+    -moz-transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+    -o-transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+    -webkit-transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+    transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+
+    box-shadow: 0 0 18px rgba(0,0,0,0.1);
+
+    &.active {
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0px);
+    }
+
+    .braintree-migration-loading {
+        display: none;
+    }
+
+    &.loading {
+        .braintree-migration-content {
+            opacity: 0;
+        }
+        .braintree-migration-loading {
+            background: url('../../../images/gene/braintree/migration/loader.gif') center 120px no-repeat;
+            background-size: 60px 60px;
+            display: block;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            color: #e1e1e1;
+
+            h3 {
+                text-align: center;
+                font-weight: normal;
+                color: #e1e1e1;
+                padding-top: 220px;
+            }
+        }
+    }
+
+    .braintree-migration-header {
+        background: white;
+        float: left;
+        width: 100%;
+        height: 85px;
+        line-height: 85px;
+
+        -webkit-border-top-left-radius: 3px;
+        -webkit-border-top-right-radius: 3px;
+        -moz-border-radius-topleft: 3px;
+        -moz-border-radius-topright: 3px;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+
+        vertical-align: middle;
+
+        .braintree-migration-logos {
+            float: left;
+            margin-left: 24px;
+            height: 85px;
+            vertical-align: middle;
+
+            .braintree-migration-braintree-logo {
+                float: left;
+                width: 139px;
+                height: 100%;
+                background: url('../../../images/gene/braintree/migration/braintree.png') no-repeat;
+                background-size: 139px 34px;
+                background-position-y: center;
+            }
+            .braintree-migration-plus {
+                float: left;
+                line-height: 85px;
+                padding: 0 18px;
+                font-size: 24px;
+            }
+            .braintree-migration-gene-logo {
+                line-height: 85px;
+                float: left;
+                width: 143px;
+                height: 100%;
+                background: url('../../../images/gene/braintree/migration/gene-logo.png') no-repeat;
+                background-size: 143px 40px;
+                background-position-y: center;
+            }
+        }
+        .braintree-migration-heading {
+            float: right;
+            margin-right: 28px;
+
+            h2 {
+                height: 85px;
+                line-height: 85px;
+                margin: 0;
+                font-weight: normal;
+            }
+        }
+    }
+
+    .braintree-migration-main {
+        float: left;
+        color: #e1e1e1;
+        box-sizing: border-box;
+        padding: 28px 26px 28px 26px;
+        font-size: 13px;
+        position: relative;
+
+        .braintree-migration-content {
+            box-sizing: border-box;
+            width: 100%;
+            line-height: 22px;
+            float: left;
+
+            ul.braintree-migration-options {
+                list-style: none;
+                padding: 6px 0 12px 0;
+
+                li {
+                    position: relative;
+                    padding: 6px 0;
+                    > input {
+                        position: absolute;
+                        top: 11px;
+                    }
+                    label {
+                        padding-left: 24px;
+                        color: #e1e1e1;
+
+                        span {
+                            display: block;
+                            font-size: 12px;
+                            color: #d6d6d6;
+                            padding-left: 24px;
+
+                            > input {
+                                margin-right: 6px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .braintree-migration-buttons {
+            padding: 18px 0 12px 0;
+
+            .gene-migration-button {
+                background: #4C4C4C;
+                color: white;
+                border: none;
+                font-weight: normal;
+                padding: 9px 28px;
+                margin-right: 6px;
+
+                border-radius: 3px;
+                -moz-border-radius: 3px;
+                -webkit-border-radius: 3px;
+
+                &.gene-migration-run {
+                    background: white;
+                    color: #4C4C4C;
+                }
+
+                &:hover {
+                    background: lighten(#4C4C4C, 10%);
+
+                    &.gene-migration-run {
+                        background: darken(white, 10%);
+                    }
+                }
+            }
+        }
+    }
+}

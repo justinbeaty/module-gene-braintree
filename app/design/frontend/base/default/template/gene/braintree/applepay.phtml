@@ -1,0 +1,23 @@
+<?php
+/* @var $this Gene_Braintree_Block_Applepay */
+?>
+<div class="form-list" id="payment_form_<?php echo $this->getMethodCode() ?>" style="display: none;">
+    <div class="applepay-info">
+        <img src="<?php echo $this->getSkinUrl('images/gene/braintree/apple-pay-logo.png'); ?>" width="100" style="margin: 12px 0 6px 0;" />
+        <p><?php echo $this->__('You will be presented with Apple Pay at the end of the checkout process.'); ?></p>
+        <input type="hidden" name="payment[payment_method_nonce]" id="applepay-payment-nonce" />
+    </div>
+</div>
+
+<script type="text/javascript">
+    if (typeof vzero !== 'undefined') {
+        // Always set the amount as it's needed within 3D secure requests
+        vzero.setAmount('<?php echo Mage::helper('gene_braintree')->formatPrice(Mage::getSingleton('checkout/cart')->getQuote()->collectTotals()->getGrandTotal()); ?>');
+    }
+
+    if (!window.ApplePaySession || window.ApplePaySession && !ApplePaySession.canMakePayments()) {
+        // Attempt to hide the parent wrapping the payment method
+        $$('input[value="gene_braintree_applepay"]').first().up().hide();
+        $('payment_form_<?php echo $this->getMethodCode() ?>').hide();
+    }
+</script>

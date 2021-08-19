@@ -1,0 +1,57 @@
+<?php if (!$this->isEnabled() || !$this->isEnabledPdp()) return; ?>
+
+<?php
+// If we have a grouped product, assume the price as to allow the server side to determine the product price
+$price = $this->getProduct()->getFinalPrice();
+if ($this->getProduct() && $this->getProduct()->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_GROUPED) {
+    $price = 1;
+}
+?>
+
+<script type="text/javascript">
+    if (typeof Translator !== 'object' && typeof Translate == 'object') {
+        var Translator = new Translate([]);
+    }
+
+    if (typeof Translator === 'object') {
+        Translator.add({
+            "We were unable to complete the request. Please try again.": "<?php echo $this->__('We were unable to complete the request. Please try again.'); ?>"
+        })
+    }
+
+    (function () {
+        document.observe("dom:loaded", function() {
+            var express = new BraintreeApplePayExpress(
+                '<?php echo $this->getToken(); ?>',
+                '<?php echo Mage::app()->getStore()->getFrontendName(); ?>',
+                '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                'product',
+                {
+                    clientTokenUrl: '<?php echo $this->getUrl('braintree/applepay/clientToken'); ?>',
+                    submitUrl:      '<?php echo $this->getUrl('braintree/applepay/submit') ?>',
+                    fetchMethodsUrl:'<?php echo $this->getUrl('braintree/applepay/fetchShippingMethods'); ?>',
+                    successUrl:     '<?php echo $this->getUrl('checkout/onepage/success'); ?>'
+                },
+                {
+                    productId:      <?php echo (int) $this->getProduct()->getId(); ?>,
+                    virtual:        <?php echo $this->getProduct()->isVirtual() ? 'true' : 'false'; ?>
+                }
+            );
+
+            // Pass over the quotes grand total for the amount
+            express.setAmount('<?php echo number_format($price, 2); ?>');
+
+            // On bundle option changes, update the express amount
+            if (typeof window.bundle !== 'undefined') {
+                $(document).observe('bundle:reload-price', function (event) {
+                    if (typeof event.memo.priceInclTax !== 'undefined') {
+                        express.setAmount(parseFloat(event.memo.priceInclTax).toFixed(2));
+                    }
+                });
+            }
+
+            // Attach our Apple Pay event onto the buttons
+            express.attachToButtons($$('[data-applepay]'));
+        });
+    })();
+</script>

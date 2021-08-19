@@ -1,0 +1,374 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Gene_Braintree>
+            <version>3.1.3</version>
+        </Gene_Braintree>
+    </modules>
+    <global>
+        <models>
+            <gene_braintree>
+                <class>Gene_Braintree_Model</class>
+                <resourceModel>gene_braintree_resource</resourceModel>
+            </gene_braintree>
+            <gene_braintree_resource>
+                <class>Gene_Braintree_Model_Resource</class>
+            </gene_braintree_resource>
+        </models>
+
+        <blocks>
+            <gene_braintree>
+                <class>Gene_Braintree_Block</class>
+            </gene_braintree>
+
+            <checkout>
+                <rewrite>
+                    <cart_totals>Gene_Braintree_Block_Cart_Totals</cart_totals>
+                </rewrite>
+            </checkout>
+        </blocks>
+
+        <helpers>
+            <gene_braintree>
+                <class>Gene_Braintree_Helper</class>
+            </gene_braintree>
+        </helpers>
+
+        <resources>
+            <gene_braintree_setup>
+                <setup>
+                    <module>Gene_Braintree</module>
+                    <class>Gene_Braintree_Model_Entity_Setup</class>
+                </setup>
+            </gene_braintree_setup>
+        </resources>
+
+        <payment>
+            <cc>
+                <types>
+                    <ME>
+                        <code>ME</code>
+                        <name>Maestro</name>
+                        <order>10</order>
+                    </ME>
+                </types>
+            </cc>
+
+            <!-- When one of these methods is active setup is required by the system -->
+            <setup_required>
+                <gene_braintree_creditcard />
+                <gene_braintree_paypal />
+                <gene_braintree_applepay />
+                <gene_braintree_googlepay />
+            </setup_required>
+
+            <!-- Function checks for assets on specific pages -->
+            <assets_required>
+                <catalog_product_view>
+                    <paypal>
+                        <class>gene_braintree/express_assets</class>
+                        <method>isEnabledPdp</method>
+                    </paypal>
+                    <applepay>
+                        <class>gene_braintree/applepay_express</class>
+                        <method>isEnabledPdp</method>
+                    </applepay>
+                </catalog_product_view>
+                <checkout_cart_index>
+                    <paypal>
+                        <class>gene_braintree/express_assets</class>
+                        <method>isEnabledCart</method>
+                    </paypal>
+                    <applepay>
+                        <class>gene_braintree/applepay_express</class>
+                        <method>isEnabledCart</method>
+                    </applepay>
+                </checkout_cart_index>
+            </assets_required>
+        </payment>
+
+        <events>
+            <!-- Add an include path for the Braintree SDK -->
+            <controller_front_init_before>
+                <observers>
+                    <gene_braintree_include_path>
+                        <type>singleton</type>
+                        <class>gene_braintree/observer</class>
+                        <method>addIncludePath</method>
+                    </gene_braintree_include_path>
+                </observers>
+            </controller_front_init_before>
+        </events>
+
+    </global>
+
+    <!-- Default values for the system configuration pages -->
+    <default>
+        <payment>
+            <!-- Core settings within the module -->
+            <gene_braintree>
+                <debug>0</debug>
+                <multi_currency_enable>0</multi_currency_enable>
+            </gene_braintree>
+
+            <!-- PayPal method -->
+            <gene_braintree_paypal>
+                <active>0</active>
+                <express_active>1</express_active>
+                <express_link_guest>0</express_link_guest>
+                <button_style_product_customise>0</button_style_product_customise>
+                <button_style_product_layout>horizontal</button_style_product_layout>
+                <button_style_product_size>responsive</button_style_product_size>
+                <button_style_product_shape>rect</button_style_product_shape>
+                <button_style_product_color>gold</button_style_product_color>
+                <button_style_cart_primary_customise>0</button_style_cart_primary_customise>
+                <button_style_cart_primary_layout>vertical</button_style_cart_primary_layout>
+                <button_style_cart_primary_size>responsive</button_style_cart_primary_size>
+                <button_style_cart_primary_shape>rect</button_style_cart_primary_shape>
+                <button_style_cart_primary_color>gold</button_style_cart_primary_color>
+                <button_style_cart_secondary_customise>0</button_style_cart_secondary_customise>
+                <button_style_cart_secondary_layout>horizontal</button_style_cart_secondary_layout>
+                <button_style_cart_secondary_size>responsive</button_style_cart_secondary_size>
+                <button_style_cart_secondary_shape>rect</button_style_cart_secondary_shape>
+                <button_style_cart_secondary_color>gold</button_style_cart_secondary_color>
+                <button_style_checkout_customise>0</button_style_checkout_customise>
+                <button_style_checkout_layout>vertical</button_style_checkout_layout>
+                <button_style_checkout_size>responsive</button_style_checkout_size>
+                <button_style_checkout_shape>rect</button_style_checkout_shape>
+                <button_style_checkout_color>gold</button_style_checkout_color>
+                <model>gene_braintree/paymentmethod_paypal</model>
+                <order_status>processing</order_status>
+                <payment_action>authorize_capture</payment_action>
+                <title>PayPal (Braintree)</title>
+                <environment>sandbox</environment>
+                <allowspecific>0</allowspecific>
+                <payment_type>single</payment_type>
+                <use_vault>0</use_vault>
+                <locale>en_gb</locale>
+                <payee_email_active>0</payee_email_active>
+                <disabled_funding></disabled_funding>
+                <sort_order>1</sort_order>
+            </gene_braintree_paypal>
+
+            <!-- Credit Card method -->
+            <gene_braintree_creditcard>
+                <active>0</active>
+                <model>gene_braintree/paymentmethod_creditcard</model>
+                <order_status>processing</order_status>
+                <payment_action>authorize</payment_action>
+                <title>Credit Card (Braintree)</title>
+                <environment>sandbox</environment>
+                <allowspecific>0</allowspecific>
+                <form_integration>hosted</form_integration>
+                <disable_auto_formatting>0</disable_auto_formatting>
+                <use_vault>0</use_vault>
+                <threedsecure>0</threedsecure>
+                <threedsecure_failed_liability>3</threedsecure_failed_liability>
+                <threedsecure_threshold>0</threedsecure_threshold>
+                <useccv>1</useccv>
+                <kount_ens_ips>209.81.12.0/24,64.128.91.0/24,64.128.87.0/24</kount_ens_ips>
+                <sort_order>0</sort_order>
+            </gene_braintree_creditcard>
+
+            <!-- ApplePay method -->
+            <gene_braintree_applepay>
+                <active>0</active>
+                <express_active>1</express_active>
+                <disable_checkout>0</disable_checkout>
+                <model>gene_braintree/paymentmethod_applepay</model>
+                <order_status>processing</order_status>
+                <payment_action>authorize_capture</payment_action>
+                <title>ApplePay (Braintree)</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>3</sort_order>
+            </gene_braintree_applepay>
+
+            <!-- Google Pay method -->
+            <gene_braintree_googlepay>
+                <model>gene_braintree/paymentmethod_googlepay</model>
+                <active>0</active>
+                <merchant_account_id>sandbox</merchant_account_id>
+                <title>Google Pay (Braintree)</title>
+                <accepted_cards>AMEX,DISCOVER,INTERAC,JCB,MASTERCARD,VISA</accepted_cards>
+                <order_status>processing</order_status>
+                <payment_action>authorize_capture</payment_action>
+                <sort_order>2</sort_order>
+            </gene_braintree_googlepay>
+
+            <!-- Legacy methods used by the migration tool -->
+            <braintree_legacy>
+                <active>0</active>
+                <model>gene_braintree/paymentmethod_legacy_creditcard</model>
+            </braintree_legacy>
+
+            <braintree_paypal_legacy>
+                <active>0</active>
+                <model>gene_braintree/paymentmethod_legacy_paypal</model>
+            </braintree_paypal_legacy>
+
+        </payment>
+
+    </default>
+
+    <frontend>
+        <secure_url>
+            <braintree>/braintree/saved/</braintree>
+        </secure_url>
+
+        <layout>
+            <updates>
+                <gene_braintree module="Gene_Braintree">
+                    <file>gene/braintree.xml</file>
+                </gene_braintree>
+            </updates>
+        </layout>
+
+        <routers>
+            <braintree>
+                <use>standard</use>
+                <args>
+                    <module>Gene_Braintree</module>
+                    <frontName>braintree</frontName>
+                </args>
+            </braintree>
+        </routers>
+
+        <translate>
+            <modules>
+                <Gene_Braintree>
+                    <files>
+                        <default>Gene_Braintree.csv</default>
+                    </files>
+                </Gene_Braintree>
+            </modules>
+        </translate>
+
+        <events>
+            <checkout_submit_all_after>
+                <observers>
+                    <gene_braintree_save_customer_id>
+                        <type>singleton</type>
+                        <class>gene_braintree/observer</class>
+                        <method>completeCheckout</method>
+                    </gene_braintree_save_customer_id>
+                </observers>
+            </checkout_submit_all_after>
+
+            <controller_action_layout_load_before>
+                <observers>
+                    <gene_braintree_detect_checkout>
+                        <type>singleton</type>
+                        <class>gene_braintree/observer</class>
+                        <method>addLayoutHandle</method>
+                    </gene_braintree_detect_checkout>
+                </observers>
+            </controller_action_layout_load_before>
+
+            <core_block_abstract_to_html_before>
+                <observers>
+                    <gene_braintree_saved_child>
+                        <type>singleton</type>
+                        <class>gene_braintree/observer</class>
+                        <method>addSavedChild</method>
+                    </gene_braintree_saved_child>
+                </observers>
+            </core_block_abstract_to_html_before>
+
+            <controller_action_predispatch_checkout_multishipping_overviewPost>
+                <observers>
+                    <gene_braintree_reset_multishipping>
+                        <type>singleton</type>
+                        <class>gene_braintree/observer</class>
+                        <method>resetMultishipping</method>
+                    </gene_braintree_reset_multishipping>
+                </observers>
+            </controller_action_predispatch_checkout_multishipping_overviewPost>
+
+            <checkout_type_multishipping_create_orders_single>
+                <observers>
+                    <gene_braintree_multishipping>
+                        <type>singleton</type>
+                        <class>gene_braintree/observer</class>
+                        <method>handleMultishipping</method>
+                    </gene_braintree_multishipping>
+                </observers>
+            </checkout_type_multishipping_create_orders_single>
+        </events>
+    </frontend>
+
+    <adminhtml>
+        <layout>
+            <updates>
+                <gene_braintree>
+                    <file>gene/braintree.xml</file>
+                </gene_braintree>
+            </updates>
+        </layout>
+
+        <translate>
+            <modules>
+                <Gene_Braintree>
+                    <files>
+                        <default>Gene_Braintree.csv</default>
+                    </files>
+                </Gene_Braintree>
+            </modules>
+        </translate>
+
+        <events>
+            <!-- Check whether we should capture the payment on shipment -->
+            <sales_order_shipment_save_after>
+                <observers>
+                    <capture_braintree_payment>
+                        <class>gene_braintree/observer</class>
+                        <method>captureBraintreePayment</method>
+                    </capture_braintree_payment>
+                </observers>
+            </sales_order_shipment_save_after>
+
+            <!-- If the compilation mode is enabled copy over the SSL certificates -->
+            <controller_action_postdispatch>
+                <observers>
+                    <check_compilation>
+                        <class>gene_braintree/observer</class>
+                        <method>checkCompilation</method>
+                    </check_compilation>
+                </observers>
+            </controller_action_postdispatch>
+
+            <core_block_abstract_to_html_before>
+                <observers>
+                    <gene_braintree_saved_child>
+                        <type>singleton</type>
+                        <class>gene_braintree/observer</class>
+                        <method>addSavedChild</method>
+                    </gene_braintree_saved_child>
+                </observers>
+            </core_block_abstract_to_html_before>
+
+            <!-- Update each invoice with its corresponding transaction_id -->
+            <sales_order_invoice_save_before>
+                <observers>
+                    <gene_braintree_sales_order_invoice_save_before>
+                        <type>singleton</type>
+                        <class>gene_braintree/observer</class>
+                        <method>updateInvoiceTransactionId</method>
+                    </gene_braintree_sales_order_invoice_save_before>
+                </observers>
+            </sales_order_invoice_save_before>
+        </events>
+    </adminhtml>
+
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <Gene_Braintree before="Mage_Adminhtml">Gene_Braintree_Adminhtml</Gene_Braintree>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+
+</config>

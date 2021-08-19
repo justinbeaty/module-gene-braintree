@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+
+    <!-- Admin settlement report -->
+    <adminhtml_braintree_transactions>
+        <reference name="content">
+            <block type="gene_braintree/adminhtml_report_transactions" name="gene.braintree.report.transactions"
+                   template="gene/braintree/transactions/index.phtml">
+                <block type="gene_braintree/adminhtml_report_transactions_search"
+                       name="gene.braintree.report.transactions.search" as="search"
+                       template="gene/braintree/transactions/search.phtml"/>
+            </block>
+        </reference>
+    </adminhtml_braintree_transactions>
+
+    <!-- Additions to the admin sales order creation process -->
+    <adminhtml_sales_order_create_index>
+        <reference name="head">
+            <action method="addCss"><file>css/gene/braintree/adminhtml.css</file></action>
+            <!-- If Braintree_Payments is enabled remove the JS -->
+            <action method="removeItem"><type>js</type><name>braintree/braintree-1.3.4.js</name></action>
+        </reference>
+        <reference name="js">
+            <!-- Include all Braintree assets through a dynamic block -->
+            <block type="gene_braintree/assets" name="gene.braintree.head.assets" template="gene/braintree/assets.phtml" after="-">
+                <action method="addExternalJs"><url>https://js.braintreegateway.com/web/{SDK_VERSION}/js/client.min.js</url></action>
+                <action method="addExternalJs"><url>https://js.braintreegateway.com/web/{SDK_VERSION}/js/hosted-fields.min.js</url></action>
+                <action method="addExternalJs"><url>https://js.braintreegateway.com/web/{SDK_VERSION}/js/three-d-secure.min.js</url></action>
+                <action method="addExternalJs"><url>https://js.braintreegateway.com/web/{SDK_VERSION}/js/data-collector.min.js</url></action>
+                <action method="addJs"><url>gene/braintree/minified/vzero.min.js</url></action>
+                <action method="addJs"><url>gene/braintree/minified/vzero-paypal.min.js</url></action>
+                <action method="addJs"><url>gene/braintree/minified/vzero-integration.min.js</url></action>
+            </block>
+        </reference>
+        <reference name="before_body_end">
+            <block type="gene_braintree/js" name="gene_braintree_js" template="gene/braintree/js.phtml" />
+        </reference>
+    </adminhtml_sales_order_create_index>
+
+    <!-- Include styling for the order view page -->
+    <adminhtml_sales_order_view>
+        <reference name="head">
+            <action method="addCss"><file>css/gene/braintree/adminhtml.css</file></action>
+        </reference>
+    </adminhtml_sales_order_view>
+
+    <!-- Include our migration wizard on the system config page -->
+    <adminhtml_system_config_edit>
+        <reference name="head">
+            <action method="addCss"><file>css/gene/braintree/migration.css</file></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="gene_braintree/adminhtml_system_config_migration" name="gene.braintree.system.config.migration"
+                   template="gene/braintree/system/config/migration.phtml" />
+        </reference>
+    </adminhtml_system_config_edit>
+
+</layout>

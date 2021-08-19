@@ -1,0 +1,331 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+
+    <!-- Include our empty assets block in the head -->
+    <default>
+        <reference name="head">
+            <block type="gene_braintree/assets" name="gene.braintree.head.assets" as="braintree.assets" template="gene/braintree/assets.phtml" after="-" />
+        </reference>
+    </default>
+
+    <!-- All checkout integrations must include this as a handle -->
+    <gene_braintree_assets>
+        <reference name="gene.braintree.head.assets">
+            <action method="addExternalJs"><url>https://js.braintreegateway.com/web/{SDK_VERSION}/js/client.min.js</url></action>
+            <action method="addExternalJs"><url>https://js.braintreegateway.com/web/{SDK_VERSION}/js/hosted-fields.min.js</url></action>
+            <action method="addExternalJs"><url>https://js.braintreegateway.com/web/{SDK_VERSION}/js/three-d-secure.min.js</url></action>
+            <action method="addExternalJS"><url>https://js.braintreegateway.com/web/{SDK_VERSION}/js/paypal-checkout.min.js</url></action>
+            <action method="addExternalJs"><url>https://js.braintreegateway.com/web/{SDK_VERSION}/js/data-collector.min.js</url></action>
+            <action method="addExternalJs"><url>https://js.braintreegateway.com/web/{SDK_VERSION}/js/apple-pay.min.js</url></action>
+            <action method="addExternalJs"><url>https://js.braintreegateway.com/web/{SDK_VERSION}/js/google-payment.min.js</url></action>
+            <action method="addExternalJS"><url>https://www.paypalobjects.com/api/checkout.js?{SDK_VERSION}</url></action>
+            <action method="addExternalJS"><url>https://pay.google.com/gp/p/js/pay.js?{SDK_VERSION}</url></action>
+            <action method="addJs"><url>gene/braintree/minified/vzero.min.js</url></action>
+            <action method="addJs"><url>gene/braintree/minified/vzero-paypal.min.js</url></action>
+            <action method="addJs"><url>gene/braintree/minified/vzero-integration.min.js</url></action>
+            <action method="addJs"><url>gene/braintree/minified/vzero-applepay.min.js</url></action>
+            <action method="addJs"><url>gene/braintree/minified/vzero-googlepay.min.js</url></action>
+        </reference>
+        <reference name="head">
+            <action method="addCss"><file>css/gene/braintree/minified/applepay.min.css</file></action>
+            <!-- If Braintree_Payments is enabled remove their JS -->
+            <action method="removeItem"><type>js</type><name>braintree/braintree-1.3.4.js</name></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="gene_braintree/js" name="gene_braintree_setup" template="gene/braintree/js/setup.phtml" />
+            <block type="gene_braintree/applepay_setup" name="gene_braintree_applepay_setup" template="gene/braintree/js/applepaysetup.phtml" />
+            <block type="gene_braintree/googlepay_setup" name="gene_braintree_googlepay_setup" template="gene/braintree/js/googlepaysetup.phtml" />
+            <remove name="braintree_payments_data_js" />
+        </reference>
+    </gene_braintree_assets>
+
+    <!-- Default onepage checkout integration -->
+    <checkout_onepage_index>
+        <update handle="gene_braintree_assets" />
+        <reference name="head">
+            <action method="addCss"><file>css/gene/braintree/minified/default.min.css</file></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="gene_braintree/js" name="gene_braintree_js" template="gene/braintree/js/default.phtml" />
+        </reference>
+    </checkout_onepage_index>
+
+    <!-- We have to use a customized version of the js.phtml file for Amasty's checkout solution -->
+    <amasty_onestep_checkout>
+        <update handle="gene_braintree_assets" />
+        <reference name="head">
+            <action method="removeItem"><type>skin_css</type><name>css/gene/braintree/minified/default.min.css</name></action>
+            <action method="addCss"><file>css/gene/braintree/minified/amasty.min.css</file></action>
+        </reference>
+        <reference name="before_body_end">
+            <remove name="gene_braintree_js" />
+            <block type="gene_braintree/js" name="gene_braintree_amasty_js" template="gene/braintree/js/amasty.phtml" />
+        </reference>
+    </amasty_onestep_checkout>
+
+    <!-- Need to include the standard resources for the onestepcheckout.com solution -->
+    <idev_onestepcheckout_index>
+        <update handle="gene_braintree_assets" />
+        <reference name="head">
+            <action method="addCss"><file>css/gene/braintree/minified/idev.min.css</file></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="gene_braintree/js" name="gene_braintree_js" template="gene/braintree/js/idev.phtml" />
+        </reference>
+    </idev_onestepcheckout_index>
+
+    <!-- Add in support for Magestores's one step checkout solution -->
+    <magestore_onestepcheckout_index>
+        <update handle="gene_braintree_assets" />
+        <reference name="head">
+            <action method="addCss"><file>css/gene/braintree/minified/magestore.min.css</file></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="gene_braintree/js" name="gene_braintree_js" template="gene/braintree/js/magestore.phtml" />
+        </reference>
+    </magestore_onestepcheckout_index>
+
+    <!-- Add in support for the Aheadworks one step checkout solution -->
+    <aw_onestepcheckout_index_index>
+        <update handle="gene_braintree_assets" />
+        <reference name="head">
+            <action method="addCss"><file>css/gene/braintree/minified/aheadworks.min.css</file></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="gene_braintree/js" name="gene_braintree_js" template="gene/braintree/js/aheadworks.phtml" />
+        </reference>
+    </aw_onestepcheckout_index_index>
+
+    <!-- Add in support for IWD's one step checkout solution -->
+    <opc_index_index>
+        <update handle="gene_braintree_assets" />
+        <reference name="head">
+            <action method="addCss"><file>css/gene/braintree/minified/iwd.min.css</file></action>
+
+            <!-- If Braintree_Payments is enabled remove their JS -->
+            <action method="removeItem"><type>js</type><name>braintree/braintree-1.3.4.js</name></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="gene_braintree/js" name="gene_braintree_js" template="gene/braintree/js/iwd.phtml" />
+        </reference>
+    </opc_index_index>
+
+    <!-- Add in support for Fire Checkouts solution -->
+    <firecheckout_index_index>
+        <update handle="gene_braintree_assets" />
+        <reference name="head">
+            <action method="addCss"><file>css/gene/braintree/minified/firecheckout.min.css</file></action>
+
+            <!-- If Braintree_Payments is enabled remove their JS -->
+            <action method="removeItem"><type>js</type><name>braintree/braintree-1.3.4.js</name></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="gene_braintree/js" name="gene_braintree_js" template="gene/braintree/js/firecheckout.phtml" />
+        </reference>
+    </firecheckout_index_index>
+
+    <!-- Add in support for Unicodes OP solution -->
+    <unicode_onestep_checkout>
+        <update handle="gene_braintree_assets" />
+        <reference name="head">
+            <action method="removeItem"><type>skin_css</type><name>css/gene/braintree/minified/default.min.css</name></action>
+            <action method="addCss"><file>css/gene/braintree/minified/unicode.min.css</file></action>
+
+            <!-- If Braintree_Payments is enabled remove their JS -->
+            <action method="removeItem"><type>js</type><name>braintree/braintree-1.3.4.js</name></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="gene_braintree/js" name="gene_braintree_js" template="gene/braintree/js/unicode.phtml" />
+        </reference>
+    </unicode_onestep_checkout>
+
+    <!-- Add in support for the Oye one step checkout -->
+    <oye_onestep_checkout>
+        <update handle="gene_braintree_assets" />
+        <reference name="head">
+            <action method="removeItem"><type>skin_css</type><name>css/gene/braintree/minified/default.min.css</name></action>
+            <action method="addCss"><file>css/gene/braintree/minified/oye.min.css</file></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="gene_braintree/js" name="gene_braintree_js" template="gene/braintree/js/oye.phtml" />
+        </reference>
+    </oye_onestep_checkout>
+
+    <!-- Add in support for the FME QuickCheckout -->
+    <checkout_onestep_index>
+        <update handle="gene_braintree_assets" />
+        <reference name="head">
+            <action method="addCss"><file>css/gene/braintree/minified/fme.min.css</file></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="gene_braintree/js" name="gene_braintree_js" template="gene/braintree/js/fme.phtml" />
+        </reference>
+    </checkout_onestep_index>
+
+    <!-- Add in support for AwesomeCheckout -->
+    <anattadesign_awesomecheckout_onepage_index>
+        <update handle="gene_braintree_assets" />
+        <reference name="head">
+            <action method="addCss"><file>css/gene/braintree/minified/awesomecheckout.min.css</file></action>
+        </reference>
+        <!-- We have to force remove these blocks, and add blocks under a new name -->
+        <remove name="gene_braintree_js" />
+        <remove name="gene_braintree_data" />
+        <reference name="before_body_end">
+            <block type="gene_braintree/js" name="gene_braintree_js_ac" template="gene/braintree/js/awesomecheckout.phtml" />
+        </reference>
+    </anattadesign_awesomecheckout_onepage_index>
+
+    <!-- Support for FancyCheckout -->
+    <fancycheckout_index_index>
+        <update handle="gene_braintree_assets" />
+        <reference name="head">
+            <action method="addCss"><file>css/gene/braintree/minified/fancycheckout.min.css</file></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="gene_braintree/js" name="gene_braintree_js" template="gene/braintree/js/fancycheckout.phtml" />
+        </reference>
+    </fancycheckout_index_index>
+
+    <!-- Add in support for Magento's mutli shipping checkout -->
+    <checkout_multishipping_billing>
+        <update handle="gene_braintree_assets" />
+        <reference name="head">
+            <action method="addCss"><file>css/gene/braintree/minified/default.min.css</file></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="gene_braintree/js" name="gene_braintree_js" template="gene/braintree/js/multishipping.phtml" />
+        </reference>
+    </checkout_multishipping_billing>
+
+    <checkout_onepage_paymentmethod>
+        <reference name="root">
+            <block type="core/text_list" name="additional" as="additional">
+                <block type="gene_braintree/creditcard_threedsecure" name="gene_braintree_creditcard_threedsecure" template="gene/braintree/creditcard/threedsecure.phtml" />
+            </block>
+        </reference>
+    </checkout_onepage_paymentmethod>
+
+    <customer_account>
+        <reference name="customer_account_navigation">
+            <action method="addLink" translate="label" module="customer">
+                <name>braintree.saved</name>
+                <path>braintree/saved/index</path>
+                <label>Saved Payment Information</label>
+            </action>
+        </reference>
+    </customer_account>
+
+    <braintree_saved_index translate="label">
+        <label>Saved Payment Information</label>
+        <update handle="customer_account"/>
+        <!-- Mage_Customer -->
+        <reference name="head">
+            <action method="addCss"><file>css/gene/braintree/minified/account.min.css</file></action>
+        </reference>
+        <reference name="root">
+            <action method="setTemplate"><template>page/2columns-left.phtml</template></action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="gene_braintree/saved" name="gene_braintree_saved_payments" template="gene/braintree/customer/saved.phtml">
+                <block type="gene_braintree/saved" name="gene_braintree_saved_payments_method" as="methods" template="gene/braintree/customer/methods.phtml" />
+            </block>
+        </reference>
+    </braintree_saved_index>
+
+    <braintree_saved_edit translate="label">
+        <label>Saved Payment Information</label>
+        <update handle="customer_account"/>
+        <!-- Mage_Customer -->
+        <reference name="head">
+            <action method="addCss"><file>css/gene/braintree/minified/account.min.css</file></action>
+        </reference>
+        <reference name="root">
+            <action method="setTemplate"><template>page/2columns-left.phtml</template></action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="gene_braintree/saved_edit" name="gene_braintree_saved_payment_edit" template="gene/braintree/customer/edit.phtml" />
+        </reference>
+    </braintree_saved_edit>
+
+    <!-- Express Checkout through product pages -->
+    <catalog_product_view>
+        <update handle="gene_braintree_assets" />
+        <reference name="gene.braintree.head.assets">
+            <!-- Instruct the asset block to include our Express assets -->
+            <action method="addJs"><url>gene/braintree/minified/express/abstract.min.js</url></action>
+            <action method="addJs"><url>gene/braintree/minified/express/paypal.min.js</url></action>
+            <action method="addJs"><url>gene/braintree/minified/express/applepay.min.js</url></action>
+        </reference>
+        <reference name="head">
+            <action method="addCss"><file>css/gene/braintree/minified/default.min.css</file></action>
+            <action method="addCss"><file>css/gene/braintree/minified/express.min.css</file></action>
+            <action method="addCss"><file>css/gene/braintree/minified/applepay.min.css</file></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="gene_braintree/express_setup" name="gene_braintree_express_catalog_button" template="gene/braintree/express/catalog.phtml" />
+            <block type="gene_braintree/applepay_express_setup" name="gene_braintree_applepay_express_setup" template="gene/braintree/applepay/express/catalog/setup.phtml" />
+        </reference>
+        <reference name="product.info.addtocart">
+            <block type="gene_braintree/express_button" name="product.info.extrabuttons.paypal.express" template="gene/braintree/express/button.phtml" after="-">
+                <action method="setData">
+                    <name>express_type</name>
+                    <value>catalog</value>
+                </action>
+                <action method="setData">
+                    <name>config_name</name>
+                    <value>product</value>
+                </action>
+            </block>
+            <block type="gene_braintree/applepay_express_button" name="product.info.extrabuttons.applepay.express" template="gene/braintree/applepay/express/catalog/button.phtml" />
+        </reference>
+    </catalog_product_view>
+
+    <!-- Express checkout through the cart page -->
+    <checkout_cart_index>
+        <update handle="gene_braintree_assets" />
+        <reference name="gene.braintree.head.assets">
+            <!-- Instruct the asset block to include our Express assets -->
+            <action method="addJs"><url>gene/braintree/minified/express/abstract.min.js</url></action>
+            <action method="addJs"><url>gene/braintree/minified/express/paypal.min.js</url></action>
+            <action method="addJs"><url>gene/braintree/minified/express/applepay.min.js</url></action>
+        </reference>
+        <reference name="head">
+            <action method="addCss"><file>css/gene/braintree/minified/default.min.css</file></action>
+            <action method="addCss"><file>css/gene/braintree/minified/express.min.css</file></action>
+            <action method="addCss"><file>css/gene/braintree/minified/applepay.min.css</file></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="gene_braintree/express_setup" name="gene_braintree_express_cart_button" template="gene/braintree/express/cart.phtml" />
+            <block type="gene_braintree/applepay_express_setup" name="gene_braintree_applepay_express_setup" template="gene/braintree/applepay/express/cart/setup.phtml" />
+        </reference>
+        <reference name="checkout.cart.top_methods">
+            <block type="gene_braintree/express_button" name="checkout.cart.methods.onepage.secondary.paypal.express" template="gene/braintree/express/button.phtml" after="-">
+                <action method="setData">
+                    <name>express_type</name>
+                    <value>cart</value>
+                    <config_name>cart_secondary</config_name>
+                </action>
+                <action method="setData">
+                    <name>config_name</name>
+                    <value>cart_secondary</value>
+                </action>
+            </block>
+            <block type="gene_braintree/applepay_express_button" name="checkout.cart.methods.onepage.top.applepay.express" template="gene/braintree/applepay/express/catalog/button.phtml" />
+        </reference>
+        <reference name="checkout.cart.methods">
+            <block type="gene_braintree/express_button" name="checkout.cart.methods.onepage.primary.paypal.express" template="gene/braintree/express/button.phtml" before="checkout.cart.methods.onepage.bottom">
+                <action method="setData">
+                    <name>express_type</name>
+                    <value>cart</value>
+                </action>
+                <action method="setData">
+                    <name>config_name</name>
+                    <value>cart_primary</value>
+                </action>
+            </block>
+            <block type="gene_braintree/applepay_express_button" name="checkout.cart.methods.onepage.top.applepay.express" template="gene/braintree/applepay/express/catalog/button.phtml" after="checkout.cart.methods.onepage.bottom" />
+        </reference>
+    </checkout_cart_index>
+
+</layout>

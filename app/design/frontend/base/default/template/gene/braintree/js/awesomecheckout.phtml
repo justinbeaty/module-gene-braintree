@@ -1,0 +1,129 @@
+<?php
+/**
+ * Intercept various functions for the Awesome Checkout checkout flow
+ * @author Dave Macaulay <braintreesupport@gene.co.uk>
+ */
+?>
+<!-- AWESOME CHECKOUT BRAINTREE SUPPORT -->
+<script type="text/javascript">
+
+    vZeroIntegration.addMethods({
+
+        setLoading: function () {
+            checkout.setLoadWaiting('review');
+        },
+
+        resetLoading: function () {
+            checkout.setLoadWaiting(false);
+        },
+
+        /**
+         * Capture the original submit function
+         */
+        captureOriginalSubmitFn: function () {
+            this._originalSubmitFn = Review.prototype.save;
+            return true;
+        },
+
+        /**
+         * Attach observer events for saving the payment step, alongside the review step
+         */
+        prepareSubmitObserver: function() {
+
+            // Store a pointer to the vZero integration
+            var vzeroIntegration = this;
+
+            // As the default checkout submits more data on the review step, we need to make sure various elements are
+            // disabled
+            Review.prototype.save = function () {
+
+                if (vzeroIntegration.shouldInterceptSubmit('creditcard')) {
+
+                    // Store a pointer to the payment class
+                    var paymentThis = this;
+                    var paymentArguments = arguments;
+
+                    // If everything was a success on the checkout end, let's submit the vZero integration
+                    vzeroIntegration.submit('creditcard', function () {
+                        return vzeroIntegration._originalSubmitFn.apply(paymentThis, paymentArguments);
+                    });
+
+                } else {
+                    // If not run the original code
+                    return vzeroIntegration._originalSubmitFn.apply(this, arguments);
+                }
+            };
+
+        },
+
+        /**
+         * Attach an event to insert the PayPal button on the review step of the checkout
+         */
+        preparePaymentMethodSwitchObserver: function () {
+
+            // Store a pointer to the vZero integration
+            var vzeroIntegration = this;
+
+            // Store a pointer to the original review step
+            var _originalReviewInitialize = Review.prototype.init;
+
+            // Intercept the save function
+            Review.prototype.init = function(saveUrl, successUrl, agreementsForm) {
+
+                // Do the original action
+                var reviewResponse = _originalReviewInitialize.apply(this, arguments);
+
+                // Run our magical function
+                vzeroIntegration.onReviewInit();
+
+                return reviewResponse;
+            };
+
+            // When the credit card payment methods is loaded init the hosted fields if enabled
+            vZero.prototype.creditCardLoaded = function() {
+                // When the credit card is loaded call the init hosted fields function
+                vzeroIntegration.initHostedFields();
+                vzeroIntegration.initSavedMethods();
+
+                vzeroIntegration.observeAjaxRequests();
+            };
+            vZero.prototype.paypalLoaded = function() {
+                vzeroIntegration.initSavedMethods();
+
+                vzeroIntegration.observeAjaxRequests();
+            };
+
+        },
+
+        /**
+         * Inform the system to retrieve the billing address from the quote
+         */
+        getBillingAddress: function () {
+            return {
+                billing: 'quote'
+            };
+        }
+
+    });
+
+    /**
+     * Start a new instance of our integration
+     *
+     * @type {vZeroIntegration}
+     */
+    new vZeroIntegration(
+        (window.vzero || false),
+        (window.vzeroPaypal || false),
+        '<div id="paypal-complete"><div id="paypal-container"></div></div>',
+        '#review-buttons-container input[type="submit"]',
+        false,
+        {
+            ignoreAjax: [
+                'anattadesign_awesomecheckout/onepage/progress',
+                'checkout/onepage/saveOrder'
+            ]
+        },
+        true
+    );
+
+</script>

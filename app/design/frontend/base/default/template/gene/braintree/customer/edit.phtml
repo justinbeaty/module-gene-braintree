@@ -1,0 +1,160 @@
+<?php
+$_ccExpMonth = $this->getPaymentMethod()->expirationMonth;
+$_ccExpYear = $this->getPaymentMethod()->expirationYear;
+$_code = 'gene_braintree_creditcard';
+?>
+<?php if($this->getTitle()): ?>
+    <div class="page-title">
+        <h1><?php echo $this->getTitle() ?></h1>
+    </div>
+<?php endif; ?>
+<?php echo $this->getMessagesBlock()->toHtml() ?>
+<form action="<?php echo $this->getSaveUrl() ?>" method="post" id="form-validate" class="gene-braintree-edit-form">
+    <input type="hidden" name="id" value="<?php echo $this->getPaymentMethod()->token; ?>" />
+    <div class="fieldset">
+        <h2 class="legend"><?php echo $this->__('Payment Information') ?></h2>
+        <ul class="form-list">
+            <li class="fields">
+                <div class="field">
+                    <label><?php echo $this->__('Card Number') ?></label>
+                    <div class="input-box card-number">
+                        <img align="left" src="<?php echo $this->getSkinUrl('images/gene/braintree/' . Gene_Braintree_Block_Creditcard::getCardIcon($this->getPaymentMethod()->cardType)); ?>" /> <?php echo $this->getPaymentMethod()->bin; ?>******<?php echo $this->getPaymentMethod()->last4; ?>
+                    </div>
+                </div>
+                <div class="field">
+                    <label><?php echo $this->__('Expiry Date') ?></label>
+                    <div class="input-box expiry-date">
+                        <div class="v-fix">
+                            <select id="<?php echo $_code ?>_expiration" name="payment[cc_exp_month]" data-genebraintree-name="expiration_month" class="month validate-cc-exp required-entry">
+                                <?php foreach ($this->getCcMonths() as $k=>$v): ?>
+                                    <option value="<?php echo $k?$k:'' ?>"<?php if($k==$_ccExpMonth): ?> selected="selected"<?php endif ?>><?php echo $v ?></option>
+                                <?php endforeach ?>
+                            </select>
+                        </div>
+                        <div class="v-fix">
+                            <select id="<?php echo $_code ?>_expiration_yr" name="payment[cc_exp_year]" data-genebraintree-name="expiration_year" class="year required-entry">
+                                <?php foreach ($this->getCcYears() as $k=>$v): ?>
+                                    <option value="<?php echo $k?$k:'' ?>"<?php if($k==$_ccExpYear): ?> selected="selected"<?php endif ?>><?php echo $v ?></option>
+                                <?php endforeach ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <?php /*
+                CVV field is not stored in Braintree's vault so there is currently no need for a customer to update it
+                <div class="field">
+                    <label><?php echo $this->__('CVV') ?></label>
+                    <div class="input-box cvv-field">
+                        <div class="v-fix">
+                            <input type="text" name="cvv" title="<?php echo Mage::helper('core')->quoteEscape($this->__('CVV')) ?>" class="input-text" id="cvv" />
+                        </div>
+                        <a href="#" class="cvv-what-is-this" id="toggle-braintree-tool-tip"><?php echo $this->__('What is this?') ?></a>
+                    </div>
+                    <div class="tool-tip" id="braintree-tool-tip" style="display:none;">
+                        <div class="btn-close"><a href="#" id="braintree-tool-tip-close" title="<?php echo Mage::helper('core')->quoteEscape($this->__('Close')) ?>"><?php echo $this->__('Close') ?></a></div>
+                        <div class="tool-tip-content"><img src="<?php echo $this->getSkinUrl('images/cvv.gif') ?>" alt="<?php echo Mage::helper('core')->quoteEscape($this->__('Card Verification Number Visual Reference')) ?>" title="<?php echo Mage::helper('core')->quoteEscape($this->__('Card Verification Number Visual Reference')) ?>" /></div>
+                    </div>
+                </div>
+                */ ?>
+            </li>
+        </ul>
+    </div>
+    <div class="fieldset">
+        <?php echo $this->getBlockHtml('formkey')?>
+        <h2 class="legend"><?php echo $this->__('Contact Information') ?></h2>
+        <ul class="form-list">
+            <li class="fields">
+                <?php echo $this->getNameBlockHtml() ?>
+            </li>
+            <li class="wide">
+                <label for="company"><?php echo $this->__('Company') ?></label>
+                <div class="input-box">
+                    <input type="text" name="billing[company]" id="company" title="<?php echo Mage::helper('core')->quoteEscape($this->__('Company')) ?>" value="<?php echo $this->escapeHtml($this->getAddress()->getCompany()) ?>" class="input-text <?php echo $this->helper('customer/address')->getAttributeValidationClass('company') ?>" />
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="fieldset">
+        <h2 class="legend"><?php echo $this->__('Address') ?></h2>
+        <ul class="form-list">
+            <?php $_streetValidationClass = $this->helper('customer/address')->getAttributeValidationClass('street'); ?>
+            <li class="wide">
+                <label for="street_1" class="required"><em>*</em><?php echo $this->__('Street Address') ?></label>
+                <div class="input-box">
+                    <input type="text" name="billing[street][]" value="<?php echo $this->escapeHtml($this->getAddress()->getStreet(1)) ?>" title="<?php echo Mage::helper('core')->quoteEscape($this->__('Street Address')) ?>" id="street_1" class="input-text <?php echo $_streetValidationClass ?>" />
+                </div>
+            </li>
+            <?php $_streetValidationClass = trim(str_replace('required-entry', '', $_streetValidationClass)); ?>
+            <?php for ($_i = 2, $_n = $this->helper('customer/address')->getStreetLines(); $_i <= $_n; $_i++): ?>
+                <li class="wide">
+                    <div class="input-box">
+                        <input type="text" name="billing[street][]" value="<?php echo $this->escapeHtml($this->getAddress()->getStreet($_i)) ?>" title="<?php echo Mage::helper('core')->quoteEscape($this->__('Street Address %s', $_i)) ?>" id="street_<?php echo $_i ?>" class="input-text <?php echo $_streetValidationClass ?>" />
+                    </div>
+                </li>
+            <?php endfor; ?>
+            <li class="fields">
+                <div class="field">
+                    <label for="city" class="required"><em>*</em><?php echo $this->__('City') ?></label>
+                    <div class="input-box">
+                        <input type="text" name="billing[city]" value="<?php echo $this->escapeHtml($this->getAddress()->getCity()) ?>"  title="<?php echo Mage::helper('core')->quoteEscape($this->__('City')) ?>" class="input-text <?php echo $this->helper('customer/address')->getAttributeValidationClass('city') ?>" id="city" />
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="region_id" class="required"><em>*</em><?php echo $this->__('State/Province') ?></label>
+                    <div class="input-box">
+                        <select id="region_id" name="billing[region_id]" title="<?php echo Mage::helper('core')->quoteEscape($this->__('State/Province')) ?>" class="validate-select" style="display:none;">
+                            <option value=""><?php echo $this->__('Please select region, state or province') ?></option>
+                        </select>
+                        <script type="text/javascript">
+                            //<![CDATA[
+                            $('region_id').setAttribute('defaultValue',  "<?php echo $this->getAddress()->getRegionId() ?>");
+                            //]]>
+                        </script>
+                        <input type="text" id="region" name="billing[region]" value="<?php echo $this->escapeHtml($this->getAddress()->getRegion()) ?>"  title="<?php echo Mage::helper('core')->quoteEscape($this->__('State/Province')) ?>" class="input-text <?php echo $this->helper('customer/address')->getAttributeValidationClass('region') ?>" />
+                    </div>
+                </div>
+            </li>
+            <li class="fields">
+                <div class="field">
+                    <label for="zip" class="required"><em>*</em><?php echo $this->__('Zip/Postal Code') ?></label>
+                    <div class="input-box">
+                        <input type="text" name="billing[postcode]" value="<?php echo $this->escapeHtml($this->getAddress()->getPostcode()) ?>" title="<?php echo Mage::helper('core')->quoteEscape($this->__('Zip/Postal Code')) ?>" id="zip" class="input-text validate-zip-international <?php echo $this->helper('customer/address')->getAttributeValidationClass('postcode') ?>" />
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="country" class="required"><em>*</em><?php echo $this->__('Country') ?></label>
+                    <div class="input-box">
+                        <?php echo $this->getCountryHtmlSelect(null, 'billing[country_id]') ?>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="buttons-set">
+        <p class="required"><?php echo $this->__('* Required Fields') ?></p>
+        <p class="back-link"><a href="<?php echo $this->escapeUrl($this->getBackUrl()) ?>"><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>
+        <button data-action="save-customer-address" type="submit" title="<?php echo Mage::helper('core')->quoteEscape($this->__('Save Address')) ?>" class="button"><span><span><?php echo $this->__('Save Address') ?></span></span></button>
+    </div>
+</form>
+<script type="text/javascript">
+    //<![CDATA[
+    var dataForm = new VarienForm('form-validate', true);
+    new RegionUpdater('country', 'region', 'region_id', <?php echo $this->helper('directory')->getRegionJson() ?>, undefined, 'zip');
+
+    if ($('toggle-braintree-tool-tip')) {
+        $('toggle-braintree-tool-tip').observe('click', toggleCvvToolTip);
+    }
+    function toggleCvvToolTip(event){
+        if($('braintree-tool-tip')){
+            $('braintree-tool-tip').setStyle({
+                top: (Event.pointerY(event)-560)+'px'
+            })
+            $('braintree-tool-tip').toggle();
+        }
+        Event.stop(event);
+    }
+    if($('braintree-tool-tip-close')){
+        Event.observe($('braintree-tool-tip-close'), 'click', toggleCvvToolTip);
+    }
+    //]]>
+</script>

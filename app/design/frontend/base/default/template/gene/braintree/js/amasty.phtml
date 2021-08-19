@@ -1,0 +1,126 @@
+<?php
+/**
+ * Add in support for Amasty One Step Checkout
+ * https://amasty.com/single-step-checkout.html
+ * @author Dave Macaulay <braintreesupport@gene.co.uk>
+ */
+?>
+<!-- AMASTY BRAINTREE SUPPORT -->
+<script type="text/javascript">
+
+    // Older versions of the checkout don't contain this variable
+    checkoutRunning = window.checkoutRunning || false;
+
+    vZeroIntegration.addMethods({
+
+        /**
+         * Validate the entire checkout
+         */
+        validateAll: function() {
+            return amscheckoutForm.validator.validate();
+        },
+
+        /**
+         * Activate the loading state of this checkout
+         */
+        setLoading: function() {
+            showLoading();
+            checkoutRunning = true;
+        },
+
+        /**
+         * Reset the loading state of the checkout
+         */
+        resetLoading: function() {
+            hideLoading();
+            checkoutRunning = false;
+        },
+
+        /**
+         * Capture the original submit function
+         */
+        captureOriginalSubmitFn: function () {
+            this._originalSubmitFn = completeCheckout;
+            return true;
+        },
+
+        /**
+         * Attach an observer to the submit action of the checkout to tokenize the card details
+         */
+        prepareSubmitObserver: function() {
+
+            // Store a pointer to the vZero integration
+            var vzeroIntegration = this;
+
+            // Re-define the original method so we can do some jazz with it
+            completeCheckout = function () {
+
+                if (vzeroIntegration.shouldInterceptSubmit('creditcard')) {
+
+                    // Store a pointer to the payment class
+                    var paymentThis = this;
+                    var paymentArguments = arguments;
+
+                    // If everything was a success on the checkout end, let's submit the vZero integration
+                    vzeroIntegration.submit('creditcard', function () {
+                        return vzeroIntegration._originalSubmitFn.apply(paymentThis, paymentArguments);
+                    });
+
+                } else {
+                    // If not run the original code
+                    return vzeroIntegration._originalSubmitFn.apply(this, arguments);
+                }
+
+            };
+
+        },
+
+        /**
+         * Prepare an event to insert the PayPal button in place of the complete checkout button
+         */
+        preparePaymentMethodSwitchObserver: function() {
+
+            // Run the default method switch
+            this.defaultPaymentMethodSwitch();
+
+            var vzeroIntegration = this;
+
+            // When this checkout updates we may need to remove the PayPal button
+            var _originalUpdateCheckout = updateCheckout;
+            updateCheckout = function() {
+
+                // Run our method switch function
+                vzeroIntegration.paymentMethodSwitch();
+
+                // Run the original function
+                return _originalUpdateCheckout.apply(this, arguments);
+            };
+
+        },
+
+        /**
+         * The action to run after the PayPal action has been completed
+         */
+        submitCheckout: function() {
+            completeCheckout();
+        }
+
+    });
+
+    /**
+     * Start a new instance of our integration
+     *
+     * @type {vZeroIntegration}
+     */
+    new vZeroIntegration(
+        (window.vzero || false),
+        (window.vzeroPaypal || false),
+        '<div id="paypal-complete"><div id="paypal-container"></div></div>',
+        '.amscheckout-submit',
+        true,
+        {
+            ignoreAjax: ['amscheckoutfront/onepage/checkout']
+        }
+    );
+
+</script>

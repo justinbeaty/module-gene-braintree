@@ -1,0 +1,158 @@
+<?php
+/**
+ * Add in support for Aheadworks One Step Checkout
+ * http://ecommerce.aheadworks.com/magento-extensions/one-step-checkout.html
+ * @author Dave Macaulay <braintreesupport@gene.co.uk>
+ */
+?>
+<!-- AHEADWORKS BRAINTREE SUPPORT -->
+<script type="text/javascript">
+
+    vZeroIntegration.addMethods({
+        currentMethod: false,
+
+        /**
+         * Validate the entire checkout
+         */
+        validateAll: function() {
+            return awOSCForm.validate();
+        },
+
+        /**
+         * Return the payment method from the checkouts methods
+         */
+        getPaymentMethod: function() {
+            return awOSCPayment.currentMethod || this.currentMethod;
+        },
+
+        /**
+         * Activate the loading state of this checkout
+         */
+        setLoading: function() {
+            awOSCForm.disablePlaceOrderButton();
+            awOSCForm.showPleaseWaitNotice();
+            awOSCForm.showOverlay();
+            checkoutRunning = true;
+        },
+
+        /**
+         * Reset the loading state of the checkout
+         */
+        resetLoading: function() {
+            awOSCForm.enablePlaceOrderButton();
+            awOSCForm.hidePleaseWaitNotice();
+            awOSCForm.hideOverlay();
+            checkoutRunning = false;
+        },
+
+        /**
+         * Capture the original submit function
+         */
+        captureOriginalSubmitFn: function () {
+            this._originalSubmitFn = AWOnestepcheckoutForm.prototype._sendPlaceOrderRequest;
+            return true;
+        },
+
+        /**
+         * Attach an observer to the submit action of the checkout to tokenize the card details
+         */
+        prepareSubmitObserver: function() {
+
+            // Store a pointer to the vZero integration
+            var vzeroIntegration = this;
+
+            // Intercept the save function
+            AWOnestepcheckoutForm.prototype._sendPlaceOrderRequest = function () {
+
+                if (vzeroIntegration.shouldInterceptSubmit('creditcard')) {
+
+                    // Store a pointer to the payment class
+                    var paymentThis = this;
+                    var paymentArguments = arguments;
+
+                    // If everything was a success on the checkout end, let's submit the vZero integration
+                    vzeroIntegration.submit('creditcard', function () {
+                        return vzeroIntegration._originalSubmitFn.apply(paymentThis, paymentArguments);
+                    });
+
+                } else {
+                    // If not run the original code
+                    return vzeroIntegration._originalSubmitFn.apply(this, arguments);
+                }
+
+            };
+
+        },
+
+        /**
+         * Prepare an event to insert the PayPal button in place of the complete checkout button
+         */
+        preparePaymentMethodSwitchObserver: function() {
+
+            // Store a pointer to the vZero integration
+            var vzeroIntegration = this;
+
+            // Store the original payment method
+            var _originalSwitchToMethod = AWOnestepcheckoutPayment.prototype.switchToMethod;
+
+            // Intercept the save function
+            AWOnestepcheckoutPayment.prototype.switchToMethod = function (method) {
+
+                vzeroIntegration.currentMethod = method;
+
+                // Run our method switch function
+                vzeroIntegration.paymentMethodSwitch(method);
+
+                // Run the original function
+                return _originalSwitchToMethod.apply(this, arguments);
+            };
+
+            Event.observe(window, 'load', function(e) {
+                // Block the change events fired by Aheadworks
+                $$('#payment_form_gene_braintree_paypal input, #payment_form_gene_braintree_creditcard input').each(function (element) {
+                    if (element.identify() != 'other-creditcard' && element.identify() != 'other-paypal') {
+                        element.stopObserving('change');
+                    }
+                });
+            });
+
+            // Stop the checkout from validating the form when the customer switches to credit card
+            // This would cause Hosted Fields to automatically submit
+            var _originalSavePayment = AWOnestepcheckoutPayment.prototype.savePayment;
+            AWOnestepcheckoutPayment.prototype.savePayment = function() {
+                if (this.currentMethod != 'gene_braintree_creditcard' || (this.currentMethod == 'gene_braintree_creditcard' && !vzeroIntegration.vzero.hostedFields)) {
+                    return _originalSavePayment.apply(this, arguments);
+                }
+            };
+
+        },
+
+        /**
+         * The action to run after the PayPal action has been completed
+         */
+        submitCheckout: function() {
+            return awOSCForm.placeOrder();
+        }
+
+    });
+
+    /**
+     * Start a new instance of our integration
+     *
+     * @type {vZeroIntegration}
+     */
+    new vZeroIntegration(
+        (window.vzero || false),
+        (window.vzeroPaypal || false),
+        '<div id="paypal-complete"><div id="paypal-container"></div></div>',
+        '#aw-onestepcheckout-place-order-button',
+        true,
+        {
+            ignoreAjax: [
+                'onestepcheckout/ajax/saveFormValues',
+                'onestepcheckout/ajax/saveOrder'
+            ]
+        }
+    );
+
+</script>

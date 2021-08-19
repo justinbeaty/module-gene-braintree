@@ -1,0 +1,81 @@
+<?php
+/**
+ * Setup the JavaScript classes with their required fields
+ */
+/* @var $this Gene_Braintree_Block_Js */
+?>
+<script type="text/javascript">
+    // Only init the vzero class once
+    if (typeof vzero === 'undefined') {
+
+        // Pass some data over to vZero integration JS
+        var vzero = new vZero(
+            'gene_braintree_creditcard',
+            false,
+            <?php echo $this->is3DEnabled(); ?>,
+            true,
+            false,
+            false,
+            '<?php echo Mage::getUrl('braintree/checkout/quoteTotal', array('_secure' => Mage::app()->getFrontController()->getRequest()->isSecure())); ?>',
+            '<?php echo Mage::getUrl('braintree/checkout/tokenizeCard', array('_secure' => Mage::app()->getFrontController()->getRequest()->isSecure())); ?>',
+            '<?php echo Mage::getUrl('braintree/checkout/clientToken', array('_secure' => Mage::app()->getFrontController()->getRequest()->isSecure())); ?>'
+        );
+
+        // Pass the supported card types over to the front-end
+        vzero.setSupportedCards('<?php echo $this->getSupportedCardTypes(); ?>');
+
+        // Pass over the merchants Kount credentials
+        vzero.setKount(
+            '<?php echo $this->getKountEnvironment(); ?>',
+            '<?php echo $this->getKountId(); ?>'
+        );
+
+        <?php if ($this->isThreeDSpecificCountries()) : ?>
+        vzero.setThreeDCountries('<?php echo $this->getThreeDSpecificCountries(); ?>');
+        <?php endif; ?>
+
+        vzero.setThreeDFailedAction('<?php echo $this->getThreeDSecureFailedAction(); ?>');
+
+        <?php if ($this->isPayPalActive()) : ?>
+        // Pass some data through to the PayPal integration
+        var vzeroPaypal = new vZeroPayPalButton(
+            false,
+            '<?php echo addslashes(Mage::app()->getStore()->getFrontendName()); ?>',
+            <?php echo $this->getSingleUse(); ?>,
+            '<?php echo $this->getLocale(); ?>',
+            <?php echo $this->getSingleFutureUse(); ?>,
+            <?php echo $this->shouldOnlyVaultOnVault() ? $this->shouldOnlyVaultOnVault() : 'false'; ?>,
+            '<?php echo Mage::getUrl('braintree/checkout/clientToken', array('_secure' => Mage::app()->getFrontController()->getRequest()->isSecure())); ?>',
+            {
+                env: '<?php echo $this->getEnv(); ?>',
+                buttonStyle: <?php echo $this->getStyleConfig('checkout'); ?>,
+                funding: {<?php echo $this->getFunding(); ?>}
+            }
+        );
+        <?php endif; ?>
+    }
+</script>
+
+<div id="three-d-modal" class="hidden">
+    <div class="bt-mask"></div>
+    <div class="bt-modal-frame">
+        <div class="bt-modal-header">
+            <div class="header-text"><?php echo $this->__('Authentication'); ?></div>
+        </div>
+        <div class="bt-modal-body"></div>
+    </div>
+</div>
+
+<?php
+/**
+ * We always want to hide the logged in aspect of the PayPal button, only ever display the button
+ */
+?>
+<style type="text/css">
+    #braintree-paypal-loggedin {
+        display: none!important;
+    }
+    #braintree-paypal-loggedout {
+        display: block!important;
+    }
+</style>

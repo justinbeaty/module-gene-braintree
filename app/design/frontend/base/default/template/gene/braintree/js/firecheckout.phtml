@@ -1,0 +1,113 @@
+<?php
+/**
+ * Add in support for Fire Checkout
+ * http://templates-master.com/magento-one-page-checkout.html
+ * @author Dave Macaulay <braintreesupport@gene.co.uk>
+ */
+?>
+<!-- FIRECHECKOUT BRAINTREE SUPPORT -->
+<script type="text/javascript">
+
+    vZeroIntegration.addMethods({
+
+        /**
+         * Validate the entire checkout
+         */
+        validateAll: function() {
+            return checkout.validate();
+        },
+
+        /**
+         * Capture the original submit function
+         */
+        captureOriginalSubmitFn: function () {
+            this._originalSubmitFn = FireCheckout.prototype.save;
+            this._originalPaymentInitialize = Payment.prototype.init;
+            return true;
+        },
+
+        /**
+         * Attach an observer to the submit action of the checkout to tokenize the card details
+         */
+        prepareSubmitObserver: function() {
+
+            // Store a pointer to the vZero integration
+            var vzeroIntegration = this;
+
+            // Re-define the original method so we can do some jazz with it
+            FireCheckout.prototype.save = function (urlSuffix, forceSave) {
+
+                if (vzeroIntegration.shouldInterceptSubmit('creditcard')) {
+
+                    // Store a pointer to the payment class
+                    var paymentThis = this;
+                    var paymentArguments = arguments;
+
+                    // Store last arguments to make a proper request from submitCheckout method
+                    vzeroIntegration.fireCheckoutArguments = arguments;
+
+                    // If everything was a success on the checkout end, let's submit the vZero integration
+                    vzeroIntegration.submit('creditcard', function () {
+                        return vzeroIntegration._originalSubmitFn.apply(paymentThis, paymentArguments);
+                    });
+
+                } else {
+                    // If not run the original code
+                    return vzeroIntegration._originalSubmitFn.apply(this, arguments);
+                }
+
+            };
+
+            // Ensure initSavedMethods is ran on initialize
+            Payment.prototype.init = function () {
+                vzeroIntegration.initSavedMethods();
+                return vzeroIntegration._originalPaymentInitialize.apply(this, arguments);
+            };
+
+        },
+
+        /**
+         * The action to run after the PayPal action has been completed
+         */
+        submitCheckout: function() {
+            // Run the original checkouts submit action
+            var fireCheckoutArguments = this.fireCheckoutArguments || [];
+            return checkout.save.apply(checkout, fireCheckoutArguments);
+        },
+
+        /**
+         * Ensure the load counter only reaches 1 from Braintree
+         */
+        setLoading: function () {
+            checkout.setLoadWaiting(true);
+            checkout.loadCounter = 1;
+        },
+
+        /**
+         * Override the loading function to set the counter to 0 so the loader actually gets hidden
+         */
+        resetLoading: function() {
+            checkout.loadCounter=0;
+            checkout.setLoadWaiting(false);
+        }
+
+    });
+
+    /**
+     * Start a new instance of our integration
+     *
+     * @type {vZeroIntegration}
+     */
+    new vZeroIntegration(
+        (window.vzero || false),
+        (window.vzeroPaypal || false),
+        '<div id="paypal-complete"><div id="paypal-container"></div></div>',
+        '#review-buttons-container .btn-checkout',
+        $$('.firecheckout-set.onecolumn').length === 0,
+        {
+            ignoreAjax: ['firecheckout/index/saveOrder']
+        },
+        $$('.firecheckout-set.onecolumn').length === 1
+    );
+
+</script>

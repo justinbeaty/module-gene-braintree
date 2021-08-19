@@ -1,0 +1,90 @@
+<?php
+/**
+ * Add in support for Unicode OP Checkout
+ * http://store.unicodesystems.in/extensions/op-checkout-extension.html
+ * @author Dave Macaulay <braintreesupport@gene.co.uk>
+ */
+?>
+<!-- UNICODE BRAINTREE SUPPORT -->
+<script type="text/javascript">
+
+    vZeroIntegration.addMethods({
+
+        /**
+         * Validate the entire checkout
+         * Annoyingly IWD hasn't already wrapped this in a function
+         */
+        validateAll: function() {
+            var validators = [];
+            for (var i = 0; i < checkout.allForms.length; i++) {
+                validators[i] = new Validation(checkout.allForms[i]);
+            }
+            return (validators[0].validate() && validators[1].validate() && checkout.shippingMethodValidate() && checkout.paymentMethodValidate() && (validators[3] ? validators[3].validate() : true));
+        },
+
+        /**
+         * Capture the original submit function
+         */
+        captureOriginalSubmitFn: function () {
+            this._originalSubmitFn = CheckoutMain.prototype.save;
+            return true;
+        },
+
+        /**
+         * Attach an observer to the submit action of the checkout to tokenize the card details
+         */
+        prepareSubmitObserver: function() {
+
+            // Store a pointer to the vZero integration
+            var vzeroIntegration = this;
+
+            // Re-define the original method so we can do some jazz with it
+            CheckoutMain.prototype.save = function () {
+
+                if (vzeroIntegration.shouldInterceptSubmit('creditcard')) {
+
+                    // Store a pointer to the payment class
+                    var paymentThis = this;
+                    var paymentArguments = arguments;
+
+                    // If everything was a success on the checkout end, let's submit the vZero integration
+                    vzeroIntegration.submit('creditcard', function () {
+                        return vzeroIntegration._originalSubmitFn.apply(paymentThis, paymentArguments);
+                    });
+
+                } else {
+                    // If not run the original code
+                    return vzeroIntegration._originalSubmitFn.apply(this, arguments);
+                }
+
+            };
+
+        },
+
+        /**
+         * The action to run after the PayPal action has been completed
+         */
+        submitCheckout: function() {
+            // Run the original checkouts submit action
+            return checkout.save();
+        }
+
+    });
+
+    /**
+     * Start a new instance of our integration
+     *
+     * @type {vZeroIntegration}
+     */
+    new vZeroIntegration(
+        (window.vzero || false),
+        (window.vzeroPaypal || false),
+        '<div id="paypal-complete"><div id="paypal-container"></div></div>',
+        '#opcheckout-place-order-button',
+        true,
+        {
+            ignoreAjax: ['opcheckout/onepage/saveOrderCustom']
+        }
+    );
+
+</script>

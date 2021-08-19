@@ -1,0 +1,30 @@
+
+<div id="braintree_creditcard_logo" style="padding-top: 5px;padding-left: 2px;">
+    <img src="//i.imgur.com/JR1BJTr.png" alt="<?php echo $this->__('PayPal - Braintree'); ?>" /> by
+    <a href="http://gene.co.uk" rel="noopener" target="_blank" style="text-decoration: none;">Gene Commerce</a>
+</div>
+
+<?php if (Mage::app()->getStore()->isAdmin() && $this->getMethod()->getCode() == 'braintree_legacy'): ?>
+    <div class="braintree_legacy_order">
+        <h4><?php echo $this->__('Legacy Payment'); ?></h4>
+        <p><?php echo $this->__('This order was imported from the legacy Braintree extension. The information displayed below maybe incomplete due to information not being provided by the original extension.'); ?></p>
+        <p><?php echo $this->__('Certain operations such as credit memos & voiding may not work with this order.'); ?></p>
+    </div>
+<?php endif; ?>
+
+<?php if ($_specificInfo = $this->getSpecificInformation()):?>
+    <table>
+        <?php foreach ($_specificInfo as $_label => $_value):?>
+            <tr>
+                <th width="220"><?php echo $this->escapeHtml($_label)?>:</td>
+                <td><?php echo nl2br(implode($this->getValueAsArray($_value, false), "\n"))?></td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+<?php endif;?>
+
+<?php if (!$this->isSingleInvoice()): ?>
+    <p><?php echo $this->__('This order contains multiple Braintree transactions, to view more information on each transaction please view their corresponding invoice.'); ?></p>
+<?php endif; ?>
+
+<?php echo $this->getChildHtml()?>

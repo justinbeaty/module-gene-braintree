@@ -1,0 +1,37 @@
+#braintree-saved-payments .payment-methods-container {
+  float: left;
+  width: 100%;
+  margin: 10px 0;
+}
+#braintree-saved-payments .payment-methods-container .payment-methods {
+  float: left;
+  width: 100%;
+  margin: 20px 0;
+}
+#braintree-saved-payments .payment-methods-container .payment-methods table tr td {
+  padding: 0 0 10px 0;
+}
+#braintree-saved-payments .payment-methods-container .payment-methods .payment-method-card-number {
+  letter-spacing: 3px;
+  display: block;
+}
+#braintree-saved-payments .payment-methods-container .payment-methods .payment-method-expiry-date {
+  display: block;
+  font-size: 12px;
+}
+#braintree-saved-payments .payment-methods-container .payment-methods .method-options a {
+  margin-left: 38px;
+}
+form.gene-braintree-edit-form .input-box.card-number {
+  line-height: 48px;
+  letter-spacing: 3px;
+}
+form.gene-braintree-edit-form .input-box.card-number img {
+  margin-right: 14px;
+}
+form.gene-braintree-edit-form .input-box.expiry-date select {
+  width: 110px;
+}
+form.gene-braintree-edit-form .input-box.cvv-field input {
+  width: 4em !important;
+}

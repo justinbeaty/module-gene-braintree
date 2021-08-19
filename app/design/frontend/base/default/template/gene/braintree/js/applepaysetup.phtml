@@ -1,0 +1,51 @@
+<!-- Gene_ApplePay Setup -->
+<?php
+/**
+ * Setup the JavaScript classes with their required fields
+ */
+/* @var $this Gene_Braintree_Block_Applepay_Setup */
+?>
+<script type="text/javascript">
+    if (typeof vzero === 'undefined') {
+        // Start an instance of vZero for the Apple Pay instance
+        var vzero = new vZero(
+            'gene_braintree_creditcard',
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            '<?php echo Mage::getUrl('braintree/checkout/clientToken', array('_secure' => Mage::app()->getFrontController()->getRequest()->isSecure())); ?>'
+        );
+    }
+</script>
+
+<script type="text/javascript">
+    (function () {
+        if (typeof vzero === 'undefined') {
+            console.error('Apple Pay was unable to initialize as \'vzero\' is undefined in the browser.');
+            return;
+        }
+
+        // Initialize Apple Pay once the integration kit has initialized
+        vzero.observeEvent('integration.onInit', function () {
+            new vZeroApplePay(
+                false,
+                '<?php echo $this->jsQuoteEscape(Mage::app()->getStore()->getFrontendName()); ?>',
+                this,
+                '#braintree-applepay-button',
+                '<?php echo Mage::getUrl('braintree/applepay/clientToken', array('_secure' => Mage::app()->getFrontController()->getRequest()->isSecure())); ?>'
+            );
+        });
+    })();
+</script>
+
+<script type="text/html" id="braintree-applepay-button">
+    <button class="apple-pay-button-with-text apple-pay-button-black-with-text" data-applepay="true">
+        <span class="text"><?php echo $this->__('Buy with'); ?></span>
+        <span class="ap-logo"></span>
+    </button>
+</script>
+<!-- / Gene_ApplePay Setup -->

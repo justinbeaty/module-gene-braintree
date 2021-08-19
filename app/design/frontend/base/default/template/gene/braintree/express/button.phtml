@@ -1,0 +1,12 @@
+<?php
+/* @var Gene_Braintree_Block_Express_Button $this */
+$configValues = $this->getStyleConfigArray($this->getData("config_name"));
+?>
+
+<div
+        data-paypalexpress="true"
+        data-style-layout="<?php echo $configValues['layout']; ?>"
+        data-style-size="<?php echo $configValues['size']; ?>"
+        data-style-shape="<?php echo $configValues['shape']; ?>"
+        data-style-color="<?php echo $configValues['color']; ?>"
+        class="paypal-express-btn <?php echo $this->getButtonLocation(); ?>"></div>

@@ -1,0 +1,20 @@
+<p><strong><?php echo $this->escapeHtml($this->getMethod()->getTitle()) ?></strong></p>
+
+<?php if ($_specificInfo = $this->getSpecificInformation()):?>
+    <table>
+        <tbody>
+        <?php foreach ($_specificInfo as $_label => $_value):
+            if($_value): ?>
+                <tr>
+                    <th class="applepay-info-header"><?php echo $this->escapeHtml($_label)?>:</th>
+                </tr>
+                <tr>
+                    <td class="applepay-info"><?php echo nl2br(implode("\n", $this->getValueAsArray($_value, true)))?></td>
+                </tr>
+            <?php endif;
+        endforeach; ?>
+        </tbody>
+    </table>
+<?php endif;?>
+
+<?php echo $this->getChildHtml()?>

@@ -1,0 +1,30 @@
+<?php if($this->hasSavedDetails() && $this->getMethod()->isVaultEnabled()): ?>
+
+    <label><?php echo $this->__('Linked Accounts'); ?></label>
+    <p><?php echo $this->__('The following PayPal accounts are currently linked with your account.'); ?></p>
+    <table width="100%" cellspacing="0" cellpadding="0" id="paypal-saved-accounts">
+        <tbody>
+        <?php
+        $count = 0;
+        foreach($this->getSavedDetails() as $savedDetail):
+            ?>
+            <tr valign="middle">
+                <td width="20"><input type="radio" name="payment[paypal_payment_method_token]" id="<?php echo $savedDetail->token; ?>" value="<?php echo $savedDetail->token; ?>"<?php echo ($count == 0 ? ' checked="checked"' : ''); ?>/></td>
+                <td valign="middle">
+                    <label for="<?php echo $savedDetail->token; ?>" style="line-height: 48px;">
+                        <img src="<?php echo $this->getSkinUrl('images/gene/braintree/PP.png') ?>" align="left" />
+                        <span class="saved-paypal-email"><?php echo $savedDetail->email; ?></span>
+                    </label>
+                </td>
+            </tr>
+            <?php
+            ++$count;
+        endforeach; ?>
+        <tr valign="middle" class="other-row">
+            <td width="20"><input type="radio" name="payment[paypal_payment_method_token]" id="other-paypal" value="other" /></td>
+            <td><label for="other-paypal"><?php echo $this->__('New PayPal Account'); ?></label></td>
+        </tr>
+        </tbody>
+    </table>
+
+<?php endif; ?>

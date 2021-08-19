@@ -1,0 +1,20 @@
+<p><strong><?php echo $this->escapeHtml($this->getMethod()->getTitle()) ?></strong></p>
+
+<?php if ($_specificInfo = $this->getSpecificInformation()):?>
+    <table>
+        <tbody>
+        <?php foreach ($_specificInfo as $_label => $_value):
+            if($_value): ?>
+            <tr>
+                <th style="text-align: left;font-weight:bold;padding: 3px 0;"><?php echo $this->escapeHtml($_label)?>:</th>
+            </tr>
+            <tr>
+                <td style="padding: 3px 0;"><?php echo nl2br(implode($this->getValueAsArray($_value, true), "\n"))?></td>
+            </tr>
+        <?php endif;
+        endforeach; ?>
+        </tbody>
+    </table>
+<?php endif;?>
+
+<?php echo $this->getChildHtml()?>

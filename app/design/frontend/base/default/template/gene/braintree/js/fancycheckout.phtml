@@ -1,0 +1,150 @@
+<?php
+/**
+ * Add in support for FancyCheckout
+ * https://www.fancycheckout.com
+ * @author Dave Macaulay <braintreesupport@gene.co.uk>
+ */
+?>
+<!-- FANCYCHECKOUT BRAINTREE SUPPORT -->
+<script type="text/javascript">
+
+    vZeroIntegration.addMethods({
+
+        /**
+         * Retrieve the payment method for the checkout
+         */
+        getPaymentMethod: function () {
+            return jQuery("input[name='payment[method]']:checked").val();
+        },
+
+        /**
+         * Retrieve the billing address from the form
+         */
+        getBillingAddress: function () {
+            return this.vzero.extractBilling($('fancycheckout_orderform').serialize(true));
+        },
+
+        /**
+         * Validate the entire checkout
+         */
+        validateAll: function() {
+            return billingForm.validator.validate();
+        },
+
+        /**
+         * Activate the loading state of this checkout
+         */
+        setLoading: function() {
+            jQuery('.load_review').show();
+            jQuery('#checkout-review-table-wrapper').css('opacity','0.5');
+        },
+
+        /**
+         * Reset the loading state of the checkout
+         */
+        resetLoading: function() {
+            jQuery('.load_review').hide();
+            jQuery('#checkout-review-table-wrapper').css('opacity','');
+        },
+
+        /**
+         * Attach an observer to the submit action of the checkout to tokenize the card details
+         */
+        prepareSubmitObserver: function() {
+
+            // Store a pointer to the vZero integration
+            var vzeroIntegration = this;
+
+            // Observe the click event
+            $('fancycheckout_orderform').onsubmit = function (event) {
+                Event.stop(event);
+
+                if (vzeroIntegration.shouldInterceptSubmit('creditcard')) {
+
+                    // If everything was a success on the checkout end, let's submit the vZero integration
+                    vzeroIntegration.submit('creditcard', function () {
+                        var form = document.getElementById('fancycheckout_orderform');
+                        HTMLFormElement.prototype.submit.call(form);
+                    });
+
+                } else {
+                    var form = document.getElementById('fancycheckout_orderform');
+                    HTMLFormElement.prototype.submit.call(form);
+                }
+            };
+
+        },
+
+        /**
+         * Prepare an event to insert the PayPal button in place of the complete checkout button
+         */
+        preparePaymentMethodSwitchObserver: function() {
+
+            var vzeroIntegration = this;
+
+            jQuery(document).ready(function ($) {
+                // When this checkout updates we may need to remove the PayPal button
+                jQuery('.opc_payment').on('click', '.payment_input', function(){
+                    // Run our method switch function
+                    vzeroIntegration.paymentMethodSwitch();
+                });
+            });
+
+        },
+
+        /**
+         * Check to see if the "Other" option is selected and show the div correctly
+         */
+        checkSavedOther: function () {
+            var parentElement = '';
+            var targetElement = '';
+
+            if (this.getPaymentMethod() == 'gene_braintree_creditcard') {
+                parentElement = '#creditcard-saved-accounts';
+                targetElement = '#credit-card-form';
+
+                // Correctly disable the other methods fields
+                jQuery('#payment_form_gene_braintree_paypal input').prop('disabled', 'disabled');
+                jQuery('#payment_form_gene_braintree_creditcard input').removeProp('disabled');
+            } else if (this.getPaymentMethod() == 'gene_braintree_paypal') {
+                parentElement = '#paypal-saved-accounts';
+                targetElement = '.paypal-info';
+
+                // Correctly disable the other methods fields
+                jQuery('#payment_form_gene_braintree_paypal input').removeProp('disabled');
+                jQuery('#payment_form_gene_braintree_creditcard input').prop('disabled', 'disabled');
+            }
+
+            // Only run this action if the parent element exists on the page
+            if ($$(parentElement).first() !== undefined) {
+                this.showHideOtherMethod(parentElement, targetElement);
+            }
+        },
+
+        /**
+         * The action to run after the PayPal action has been completed
+         */
+        submitCheckout: function() {
+            var form = document.getElementById('fancycheckout_orderform');
+            HTMLFormElement.prototype.submit.call(form);
+        }
+
+    });
+
+    /**
+     * Start a new instance of our integration
+     *
+     * @type {vZeroIntegration}
+     */
+    new vZeroIntegration(
+        (window.vzero || false),
+        (window.vzeroPaypal || false),
+        '<div id="paypal-complete"><div id="paypal-container"></div></div>',
+        '#review-buttons-container .btn-checkout',
+        true,
+        {
+            ignoreAjax: ['amscheckoutfront/onepage/checkout']
+        }
+    );
+
+</script>

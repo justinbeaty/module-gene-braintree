@@ -1,0 +1,44 @@
+<!-- Gene GooglePay Setup -->
+<?php /* @var Gene_Braintree_Block_Googlepay_Setup $this */ ?>
+<script type="text/javascript">
+    if (typeof vzero === 'undefined') {
+        // Start an instance of vZero for the Apple Pay instance
+        var vzero = new vZero(
+            'gene_braintree_creditcard',
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            '<?php echo Mage::getUrl('braintree/checkout/clientToken', array('_secure' => Mage::app()->getFrontController()->getRequest()->isSecure())); ?>'
+        );
+        console.debug(vzero);
+    }
+</script>
+
+<script type="text/javascript">
+    (function () {
+        if (typeof vzero === 'undefined') {
+            console.error('Google Pay was unable to initialize as \'vzero\' is undefined in the browser.');
+            return;
+        }
+
+        // Initialize Apple Pay once the integration kit has initialized
+        vzero.observeEvent('integration.onInit', function () {
+            new vZeroGooglePay(
+                false,
+                '<?php echo $this->jsQuoteEscape(Mage::app()->getStore()->getFrontendName()); ?>',
+                this,
+                '<?php echo Mage::getUrl('braintree/googlepay/clientToken', array('_secure' => Mage::app()->getFrontController()->getRequest()->isSecure())); ?>',
+                {
+                    environment: '<?php echo $this->jsQuoteEscape($this->getEnvironment()); ?>',
+                    merchantAccountId: '<?php echo $this->jsQuoteEscape($this->getGoogleMerchantAccountID()); ?>',
+                    currencyCode: '<?php echo $this->jsQuoteEscape($this->getStoreCurrency()); ?>',
+                    allowedCardNetworks: <?php echo $this->jsQuoteEscape($this->getAllowedCardNetworks()); ?>
+                }
+            );
+        });
+    })();
+</script>

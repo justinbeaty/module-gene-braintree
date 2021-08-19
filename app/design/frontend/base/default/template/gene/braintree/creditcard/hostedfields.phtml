@@ -1,0 +1,86 @@
+<?php
+/* @var $this Gene_Braintree_Block_Creditcard */
+$_code = $this->getMethodCode()
+?>
+<div id="payment_form_<?php echo $_code ?>" style="display:none;" class="form-list">
+
+    <?php echo $this->getSavedChildHtml(); ?>
+
+    <div id="credit-card-form"<?php echo ($this->hasSavedDetails() && $this->getMethod()->isVaultEnabled() ? ' style="display: none;"' : ''); ?> class="loading">
+        <div class="credit-card-loading">
+            <img src="<?php echo $this->getSkinUrl('images/gene/loader.gif'); ?>" />
+            <p><?php echo $this->__('Loading Payment Method'); ?></p>
+        </div>
+        <ul class="form-list braintree-hostedfield">
+
+            <?php if($this->getHostedDescriptor()): ?>
+                <li>
+                    <p><?php echo $this->escapeHtml( $this->getHostedDescriptor() ); ?></p>
+                </li>
+            <?php endif; ?>
+            
+            <?php if($this->showAcceptedCards()): ?>
+            <li id="braintree-accepted-cards">
+                <label for="card-number">
+                    <?php echo $this->__('We Accept'); ?>
+                    <div>
+                        <?php foreach($this->getAllowedCards() as $card): ?>
+                            <img src="<?php echo $this->getSkinUrl('images/gene/braintree/' . $card['value'] . '.png') ?>" alt="<?php echo $card['label']; ?>" />
+                        <?php endforeach; ?>
+                    </div>
+                </label>
+            </li>
+            <?php endif; ?>
+
+            <li>
+                <label for="card-number"><?php echo $this->__('Card Number'); ?></label>
+                <div class="card-input braintree-card-input-field">
+                    <div class="card-type"><img src="<?php echo $this->getSkinUrl('images/gene/braintree/card.png') ?>" id="card-type-image" /></div>
+                    <div id="card-number"></div>
+                </div>
+            </li>
+            <li>
+                <label for="expiration-month"><?php echo $this->__('Expiration Date'); ?></label>
+                <div id="braintree-expiration-container">
+                    <div id="expiration-month" class="braintree-input-field braintree-expiration"></div>
+                    <div class="braintree-expiration-seperator">/</div>
+                    <div id="expiration-year" class="braintree-input-field braintree-expiration"></div>
+                </div>
+            </li>
+            <?php echo $this->getChildHtml() ?>
+            <?php if($this->hasVerification()): ?>
+                <li>
+                    <label for="cvv"><?php echo $this->__('CVV'); ?></label>
+                    <div id="cvv" class="braintree-input-field braintree-cvv"></div>
+                    <a href="#" class="cvv-what-is-this"><?php echo $this->__('What is this?') ?></a>
+                </li>
+            <?php endif; ?>
+            <?php /* This field is automatically shown by JavaScript based on the merchants AVS settings */ ?>
+            <li class="braintree-avs-postal-code" style="display: none;">
+                <label for="postal-code"><?php echo $this->__('Postal Code'); ?></label>
+                <div id="postal-code" class="braintree-input-field braintree-postal-code"></div>
+            </li>
+            <?php if ($this->canSaveCard()): ?>
+                <li id="<?php echo $_code ?>_store_in_vault_div">
+                    <input type="checkbox" title="<?php echo $this->__('Save this card for future use') ?>"
+                           class="input-checkbox" id="<?php echo $_code ?>_store_in_vault" name="payment[save_card]"
+                           value="1"/>
+                    <label for="<?php echo $_code ?>_store_in_vault" style="float:none;"><?php echo $this->__(
+                            'Save this card for future use'
+                        ) ?></label>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </div>
+
+    <div id="braintree-hosted-submit">
+        <!-- Fields for the payment method -->
+        <input type="text" name="payment[payment_method_nonce]" value="" id="creditcard-payment-nonce" class="validate-fire-hosted" />
+    </div>
+</div>
+
+<script type="text/javascript">
+    if(typeof vzero !== 'undefined') {
+        vzero.creditCardLoaded();
+    }
+</script>

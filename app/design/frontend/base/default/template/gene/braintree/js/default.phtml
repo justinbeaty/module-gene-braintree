@@ -1,0 +1,171 @@
+<?php
+/**
+ * Intercept various functions for the default checkout flow
+ * @author Dave Macaulay <braintreesupport@gene.co.uk>
+ */
+?>
+<!-- DEFAULT BRAINTREE SUPPORT -->
+<script type="text/javascript">
+
+    vZeroIntegration.addMethods({
+
+        /**
+         * Capture the original submit function
+         */
+        captureOriginalSubmitFn: function () {
+            this._originalSubmitFn = Review.prototype.save;
+            this._originalNextStep = Review.prototype.nextStep;
+            this._originalPaymentSaveFn = Payment.prototype.save;
+            return true;
+        },
+
+        /**
+         * Attach observer events for saving the payment step, alongside the review step
+         */
+        prepareSubmitObserver: function() {
+
+            // Store a pointer to the vZero integration
+            var vzeroIntegration = this;
+
+            // On payment save validate that Hosted Fields is valid
+            Payment.prototype.save = function () {
+                if (vzeroIntegration.shouldInterceptSubmit('creditcard')) {
+                    if (vzeroIntegration.validateHostedFields()) {
+                        return vzeroIntegration._originalPaymentSaveFn.apply(this, arguments);
+                    }
+                } else {
+                    return vzeroIntegration._originalPaymentSaveFn.apply(this, arguments);
+                }
+            };
+
+            // As the default checkout submits more data on the review step, we need to make sure various elements
+            // are disabled
+            Review.prototype.save = function() {
+
+                // Do the standard validation
+                if (vzeroIntegration.shouldInterceptSubmit('creditcard')) {
+
+                    // Store a pointer to the payment class
+                    var paymentThis = this;
+                    var paymentArguments = arguments;
+
+                    // If everything was a success on the checkout end, let's submit the vZero integration
+                    vzeroIntegration.submit('creditcard', function () {
+                        return vzeroIntegration._originalSubmitFn.apply(paymentThis, paymentArguments);
+                    });
+
+                } else {
+                    // If not run the original code
+                    return vzeroIntegration._originalSubmitFn.apply(this, arguments);
+                }
+            };
+
+            // Override the next step functionality to handle failed payments
+            Review.prototype.nextStep = function (transport) {
+
+                // Parse the transport
+                var response;
+                if (transport && transport.responseText) {
+                    try {
+                        response = eval('(' + transport.responseText + ')');
+                    }
+                    catch (e) {
+                        response = {};
+                    }
+                }
+
+                // Retrieve any error messages
+                if (typeof response.error_messages !== 'undefined') {
+                    var errorMessage = response.error_messages;
+                    if (typeof errorMessage === 'object') {
+                        errorMessage = errorMessage.join("\n");
+                    }
+
+                    // Determine if the error message contains a generic message from a payment failure
+                    if (errorMessage.indexOf('attempt refreshing the page') !== -1 ||
+                        errorMessage.indexOf('please try another payment method or contacting your issuing bank') !== -1 ||
+                        errorMessage.indexOf('please try again or consider using an alternate payment method') !== -1 ||
+                        errorMessage.indexOf('Your card payment has failed') !== -1
+                    ) {
+                        response.goto_section = 'payment';
+                        transport.responseText = JSON.stringify(response);
+                    }
+                }
+
+                // Run the original action
+                return vzeroIntegration._originalNextStep.call(this, transport);
+            };
+        },
+
+        /**
+         * Attach an event to insert the PayPal button on the review step of the checkout
+         */
+        preparePaymentMethodSwitchObserver: function() {
+
+            // Store a pointer to the vZero integration
+            var vzeroIntegration = this;
+
+            // Store a pointer to the original review step
+            var _originalReviewInitialize = Review.prototype.initialize;
+
+            // Intercept the save function
+            Review.prototype.initialize = function(saveUrl, successUrl, agreementsForm) {
+
+                // If the vZero class is available run an updateData to ensure our totals are correct
+                if (vzero && typeof vzero.updateData === 'function') {
+                    vzero.updateData();
+                }
+
+                // Do the original action
+                var reviewResponse = _originalReviewInitialize.apply(this, arguments);
+
+                // Run our magical function
+                vzeroIntegration.onReviewInit();
+
+                return reviewResponse;
+            };
+
+            // When the credit card payment methods is loaded init the hosted fields if enabled
+            vZero.prototype.creditCardLoaded = function() {
+                // When the credit card is loaded call the init hosted fields function
+                vzeroIntegration.initHostedFields();
+                vzeroIntegration.initSavedMethods();
+            };
+            vZero.prototype.paypalLoaded = function() {
+                vzeroIntegration.initSavedMethods();
+            };
+
+        },
+
+        /**
+         * Set the loading state
+         */
+        setLoading: function () {
+            checkout.setLoadWaiting('review');
+        },
+
+        /**
+         * Reset the loading state
+         */
+        resetLoading: function () {
+            checkout.setLoadWaiting(false);
+        }
+
+    });
+
+    /**
+     * Start a new instance of our integration
+     *
+     * @type {vZeroIntegration}
+     */
+    new vZeroIntegration(
+        (window.vzero || false),
+        (window.vzeroPaypal || false),
+        '<div id="paypal-complete"><div id="paypal-container"></div></div>',
+        '#review-buttons-container button',
+        false,
+        false,
+        true // Submit after payment
+    );
+
+</script>

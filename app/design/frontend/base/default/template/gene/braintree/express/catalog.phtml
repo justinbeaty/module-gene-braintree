@@ -1,0 +1,63 @@
+<?php
+/** @var $this Gene_Braintree_Block_Express_Setup */
+if (!$this->isEnabledPdp()) {
+    return;
+}
+?>
+
+<script type="text/javascript">
+    if (typeof Translator !== 'object' && typeof Translate == 'object') {
+        var Translator = new Translate([]);
+    }
+
+    if (typeof Translator === 'object') {
+        Translator.add({
+            "We were unable to complete the request. Please try again.": "<?php echo $this->__('We were unable to complete the request. Please try again.'); ?>",
+            "Checkout with PayPal": "<?php echo $this->__("Checkout with PayPal"); ?>"
+        })
+    }
+
+    // Override the setStockData function to exclude our PayPal button
+    if (typeof Product.ConfigurableSwatches === 'function') {
+        var originSetStockData = Product.ConfigurableSwatches.prototype.setStockData;
+        Product.ConfigurableSwatches.prototype.setStockData = function () {
+            originSetStockData.apply(this, arguments);
+
+            this._E.cartBtn.btn = $$('.add-to-cart button.button:not([data-paypalexpress]):not(.not-btn-cart)');
+        };
+    }
+
+    (function () {
+        document.observe("dom:loaded", function() {
+            var express = new BraintreePayPalExpress(
+                false,
+                '<?php echo addslashes(Mage::app()->getStore()->getFrontendName()); ?>',
+                '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                'product',
+                {
+                    clientTokenUrl: '<?php echo Mage::getUrl('braintree/checkout/clientToken', ['_secure' => Mage::app()->getFrontController()->getRequest()->isSecure()]) ?>',
+                    authUrl:        '<?php echo $this->getUrl('braintree/express/authorization') ?>',
+                    shippingSaveUrl:'<?php echo $this->getUrl('braintree/express/saveShipping') ?>',
+                    couponSaveUrl:  '<?php echo $this->getUrl('braintree/express/saveCoupon') ?>',
+                    successUrl:     '<?php echo $this->getUrl("checkout/onepage/success"); ?>',
+                },
+                {
+                    locale:         '<?php echo $this->getStoreLocale(); ?>',
+                    token:          '<?php echo $this->getToken(); ?>',
+                    total:          '<?php echo $this->getProduct()->getPrice(); ?>',
+                    currency:       '<?php echo $this->getStoreCurrency(); ?>',
+                    env:            '<?php echo $this->getEnv() ?>',
+                    displayName:    '<?php echo addslashes(Mage::app()->getStore()->getFrontendName()); ?>',
+                    buttonStyle:    <?php echo $this->getStyleConfig('product'); ?>,
+                    productId:      <?php echo (int) $this->getProduct()->getId(); ?>,
+                    singleUse:      <?php echo $this->getSingleUse(); ?>,
+                    funding:        {<?php echo $this->getFunding(); ?>}
+                }
+            );
+            express.attachToButtons($$('[data-paypalexpress]'));
+
+            // Expose the ppExpress object to the window for backwards compatibility
+            window.ppExpress = express;
+        });
+    })();
+</script>

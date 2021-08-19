@@ -1,0 +1,175 @@
+<?php
+/**
+ * Add in support for onestepcheckout.com
+ * http://onestepcheckout.com
+ */
+?>
+<!-- IDEV BRAINTREE SUPPORT -->
+<script type="text/javascript">
+
+    vZeroIntegration.addMethods({
+
+        /**
+         * Validate the entire checkout
+         * Annoyingly IWD hasn't already wrapped this in a function
+         */
+        validateAll: function() {
+            // First validate the form
+            var form = new VarienForm('onestepcheckout-form');
+            return form.validator.validate();
+        },
+
+        /**
+         * Activate the loading state of this checkout
+         */
+        setLoading: function() {
+            var submitElement = $('onestepcheckout-place-order');
+
+            /* Disable button to avoid multiple clicks */
+            submitElement.removeClassName('orange').addClassName('grey');
+            submitElement.disabled = true;
+
+            // Add in our loader event
+            if ($$('.onestepcheckout-place-order-loading').first() !== undefined) {
+                $$('.onestepcheckout-place-order-loading').first().show();
+            } else {
+                var loaderElement = new Element('span').
+                addClassName('onestepcheckout-place-order-loading').
+                update('<?php echo $this->__('Please wait, processing your order...'); ?>');
+                submitElement.parentNode.appendChild(loaderElement);
+            }
+        },
+
+        /**
+         * Reset the loading state of the checkout
+         */
+        resetLoading: function() {
+            // Reset the placing order flag
+            already_placing_order = false;
+
+            // Grab the submit button
+            var submitElement = $('onestepcheckout-place-order');
+
+            // Remove the loading stuff on the form
+            submitElement.addClassName('orange').removeClassName('grey');
+            submitElement.removeAttribute('disabled');
+
+            // Remove the loader element
+            if ($$('.onestepcheckout-place-order-loading').first() !== undefined) {
+                $$('.onestepcheckout-place-order-loading').first().remove();
+            }
+        },
+
+        /**
+         * Capture the original submit function
+         */
+        captureOriginalSubmitFn: function () {
+            this._originalSubmitFn = $('onestepcheckout-form').submit;
+            return true;
+        },
+
+        /**
+         * Attach an observer to the submit action of the checkout to tokenize the card details
+         */
+        prepareSubmitObserver: function() {
+
+            // Store a pointer to the vZero integration
+            var vzeroIntegration = this;
+
+            // Observe the click event
+            $('onestepcheckout-form').submit = function braintreeOverride(forceOriginal) {
+                forceOriginal = forceOriginal || false;
+
+                if (!forceOriginal && vzeroIntegration.shouldInterceptSubmit('creditcard')) {
+
+                    // If everything was a success on the checkout end, let's submit the vZero integration
+                    vzeroIntegration.submit('creditcard', function () {
+                        return vzeroIntegration._originalSubmitFn.call($('onestepcheckout-form'), arguments);
+                    });
+
+                } else {
+                    return vzeroIntegration._originalSubmitFn.call($('onestepcheckout-form'), arguments);
+                }
+
+            };
+
+        },
+
+        /**
+         * The action to run after the PayPal action has been completed
+         */
+        submitCheckout: function() {
+            // Submit the checkout
+            return $('onestepcheckout-form').submit(true);
+        }
+
+    });
+
+    /**
+     * Start a new instance of our integration
+     *
+     * @type {vZeroIntegration}
+     * @private
+     */
+    var _integration = new vZeroIntegration(
+        (window.vzero || false),
+        (window.vzeroPaypal || false),
+        '<div id="paypal-complete"><div id="paypal-container"></div></div>',
+        '#onestepcheckout-place-order',
+        true,
+        {
+            ignoreAjax: ['check_email']
+        }
+    );
+
+    // Attach an event onto the button to verify it's submit function has been overridden with our own
+    document.observe("dom:loaded", function () {
+
+        if($('onestepcheckout-place-order') != null) {
+
+            // Observe the click event so we can double check the integration has fired correctly
+            $('onestepcheckout-place-order').observe('click', function(e) {
+
+                if($('onestepcheckout-form') != null) {
+
+                    // Detect if we've override the function
+                    if(!/braintreeOverride/.match($('onestepcheckout-form').submit.toString())) {
+
+                        // Stop the event whilst we prepare the submission observer
+                        Event.stop(e);
+
+                        // If not, and the integration is loaded, attempt to attach the observer
+                        if(typeof vZeroIntegration === 'function' && _integration instanceof vZeroIntegration && vZeroIntegration.prototype.loaded) {
+
+                            // Attempt to prepare the submit observer again
+                            _integration.prepareSubmitObserver();
+
+                            // Detect if we've overriden the function
+                            if(/braintreeOverride/.match($('onestepcheckout-form').submit.toString())) {
+
+                                // Re-fire the event
+                                return $('onestepcheckout-place-order').click();
+
+                            } else {
+                                alert('Sadly we\'re currently unable to process your order, please contact a member of our support team.');
+                                console.error('_integration is not loaded or an instance of the vZeroIntegration class, or the class failed to originally initialize.');
+                                return false;
+                            }
+
+                        } else {
+                            alert('Sadly we\'re currently unable to process your order, please contact a member of our support team.');
+                            console.error('_integration is not loaded or an instance of the vZeroIntegration class, or the class failed to originally initialize.');
+                            return false;
+                        }
+                    }
+
+                } else {
+                    Event.stop(e);
+                    console.error('We cannot locate the form \'onestepcheckout-form\', please make sure your form has the correct ID.');
+                    return false;
+                }
+            });
+        }
+    });
+
+</script>

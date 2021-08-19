@@ -1,0 +1,23 @@
+<?php
+/* @var $this Gene_Braintree_Block_Express_Checkout */
+?>
+<div class="item-row order-title">
+    <h3><?php echo $this->__('There has been an issue whilst processing your order'); ?></h3>
+    <p><?php echo $this->__('The following error has occurred whilst trying to process your order:'); ?></p>
+</div>
+<div class="item-row">
+    <?php
+    $messages = $this->getMessagesBlock();
+    /* @var $message Mage_Core_Model_Message_Error */
+    foreach ($messages->getMessages() as $message) {
+        ?>
+        <p>
+            <?php echo $message->getText(); ?>
+        </p>
+        <?php
+    }
+    ?>
+</div>
+<div class="item-row order">
+    <button type="button" onclick="ppExpress.hideModal();" class="button"><?php echo $this->__('Close'); ?></button>
+</div>

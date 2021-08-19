@@ -1,0 +1,33 @@
+<?php if($this->hasSavedDetails() && $this->getMethod()->isVaultEnabled()): ?>
+
+    <label><strong><?php echo $this->__('Saved Cards'); ?></strong></label><br />
+    <p style="padding-left: 0;" class="saved-cards-intro"><?php echo $this->__('The customer has the following cards linked with their account.'); ?></p>
+    <table cellspacing="0" cellpadding="0" id="creditcard-saved-accounts">
+        <?php
+        $count = 0;
+        foreach($this->getSavedDetails() as $savedDetail):
+            ?>
+            <tr valign="middle">
+                <td width="20">
+                    <input type="radio" name="payment[card_payment_method_token]" id="<?php echo $savedDetail->token; ?>" value="<?php echo $savedDetail->token; ?>"<?php echo ($count == 0 ? ' checked="checked"' : ''); ?>/>
+                </td>
+                <td>
+                    <label for="<?php echo $savedDetail->token; ?>">
+                        <img src="<?php echo $this->getSkinUrl('images/gene/braintree/' . Gene_Braintree_Block_Creditcard::getCardIcon($savedDetail->cardType)) ?>" align="left" />
+                            <span class="saved-card-info">
+                                <span class="saved-card-number">&nbsp;&nbsp; xxxx - xxxx - xxxx - <?php echo $savedDetail->last4; ?></span>
+                                <span class="saved-expiry-date"><em><?php echo $this->__('Expires:'); ?></em> <?php echo $savedDetail->expirationMonth; ?>/<?php echo $savedDetail->expirationYear; ?></span>
+                            </span>
+                    </label>
+                </td>
+            </tr>
+            <?php
+            ++$count;
+        endforeach; ?>
+        <tr valign="middle" class="other-row">
+            <td width="20"><input type="radio" name="payment[card_payment_method_token]" id="other-creditcard" value="other" /></td>
+            <td><label for="other-creditcard"><?php echo $this->__('New Credit Card'); ?></label></td>
+        </tr>
+    </table>
+
+<?php endif; ?>

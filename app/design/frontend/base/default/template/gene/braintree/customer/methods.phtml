@@ -1,0 +1,33 @@
+<?php if($savedDetails = $this->getSavedDetails($this->getType())): ?>
+
+<table width="100%">
+    <?php foreach($savedDetails as $savedDetail): ?>
+        <tr>
+            <td width="64">
+                <img src="<?php echo $this->getSkinUrl('images/gene/braintree/' . Gene_Braintree_Block_Creditcard::getCardIcon((isset($savedDetail->cardType) ? $savedDetail->cardType : 'paypal'))); ?>" />
+            </td>
+            <td>
+                <?php if(isset($savedDetail->cardType)): ?>
+                    <span class="payment-method-card-number">
+                        <?php echo $savedDetail->bin; ?>******<?php echo $savedDetail->last4; ?>
+                    </span>
+                    <span class="payment-method-expiry-date">
+                        <em><?php echo $this->__('Expires:'); ?></em> <?php echo $savedDetail->expirationMonth; ?>/<?php echo $savedDetail->expirationYear; ?>
+                    </span>
+                <?php else: ?>
+                    <span class="payment-method-paypal-email">
+                        <?php echo $savedDetail->email; ?>
+                    </span>
+                <?php endif; ?>
+            </td>
+            <td class="method-options align-right">
+                <?php if(isset($savedDetail->cardType)): ?>
+                    <a href="<?php echo $this->getUrl('*/*/edit', array('id' => $savedDetail->token)); ?>"><?php echo $this->__('Edit'); ?></a>
+                <?php endif; ?>
+                <a href="<?php echo $this->getUrl('*/*/remove', array('id' => $savedDetail->token)); ?>" onclick="return confirm('<?php echo $this->__('Are you sure you want to remove this payment method?'); ?>');"><?php echo $this->__('Remove'); ?></a>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+</table>
+
+<?php endif; ?>

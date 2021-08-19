@@ -1,0 +1,101 @@
+<form action="" method="get">
+    <div class="switcher search">
+
+        <table>
+            <tr>
+                <th><label class="date_label" style="font-weight: bold;"><?php echo $this->__('Date Filter:') ?></label></th>
+                <td>
+                    <span class="label"><?php echo $this->__('From:'); ?></span>
+                    <img src="<?php echo $this->getSkinUrl('images/grid-cal.gif'); ?>" alt="" class="v-middle" id="gene_braintree_from_date_trig" title="Date selector">
+                    <input type="text" name="from_date" id="gene_braintree_from_date" class="input-text no-changes" value="<?php echo $this->getFromDate(); ?>" size="14">
+
+                    <span class="label"><?php echo $this->__('To:'); ?></span>
+                    <img src="<?php echo $this->getSkinUrl('images/grid-cal.gif'); ?>" alt="" class="v-middle" id="gene_braintree_to_date_trig" title="Date selector">
+                    <input type="text" name="to_date" id="gene_braintree_to_date" class="input-text no-changes" value="<?php echo $this->getToDate(); ?>" size="14">
+                </td>
+            </tr>
+            <tr>
+                <th><label style="font-weight: bold;" for="braintree_type"><?php echo $this->__('Type:') ?></label></th>
+                <td>
+                    <select id="braintree_type" name="type">
+                        <?php foreach($this->getTypesAsArray() as $key => $value): ?>
+                            <option value="<?php echo $key; ?>"<?php echo ($this->getSelectedType() == $key ? ' selected="selected"' : ''); ?>><?php echo $value; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th><label style="font-weight: bold;" for="braintree_status"><?php echo $this->__('Status:') ?></label></th>
+                <td>
+                    <select id="braintree_status" name="status">
+                        <?php foreach($this->getStatusesAsArray() as $key => $value): ?>
+                            <option value="<?php echo $key; ?>"<?php echo ($this->getSelectedStatus() == $key ? ' selected="selected"' : ''); ?>><?php echo $value; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th><label style="font-weight: bold;" for="braintree_order_id"><?php echo $this->__('Magento Order ID:') ?></label></th>
+                <td>
+                    <input type="text" id="braintree_order_id" name="order_id" value="<?php echo $this->getOrderId(); ?>" class="input-text" />
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">
+                    <button type="submit">Filter Transactions</button>
+                    <button type="reset" onclick="window.location='<?php echo Mage::helper('adminhtml')->getUrl('*/*/*'); ?>';">Reset</button>
+                </th>
+            </tr>
+        </table>
+    </div>
+</form>
+
+<style type="text/css">
+    .switcher.search th, .switcher.search td {
+        padding: 4px 10px 4px 2px;
+    }
+</style>
+
+<!-- Include the Calender Javascript -->
+<script type="text/javascript">
+    Calendar.setup({
+        inputField : "gene_braintree_from_date",
+        ifFormat : "%d-%m-%Y %H:%M",
+        button : "gene_braintree_from_date_trig",
+        align : "Bl",
+        singleClick : true,
+        showsTime: true
+    });
+    Calendar.setup({
+        inputField : "gene_braintree_to_date",
+        ifFormat : "%d-%m-%Y %H:%M",
+        button : "gene_braintree_to_date_trig",
+        align : "Bl",
+        singleClick : true,
+        showsTime: true
+    });
+
+    $("gene_braintree_from_date_trig").observe("click", showCalendar);
+    $("gene_braintree_to_date_trig").observe("click", showCalendar);
+
+    function showCalendar(event){
+        var element = event.element(event);
+        var offset = $(element).viewportOffset();
+        var scrollOffset = $(element).cumulativeScrollOffset();
+        var dimensionsButton = $(element).getDimensions();
+        var index = $("widget-chooser").getStyle("zIndex");
+
+        $$("div.calendar").each(function(item){
+            if ($(item).visible()) {
+                var dimensionsCalendar = $(item).getDimensions();
+
+                $(item).setStyle({
+                    "zIndex" : index + 1,
+                    "left" : offset[0] + scrollOffset[0] - dimensionsCalendar.width
+                    + dimensionsButton.width + "px",
+                    "top" : offset[1] + scrollOffset[1] + dimensionsButton.height + "px"
+                });
+            };
+        });
+    };
+</script>

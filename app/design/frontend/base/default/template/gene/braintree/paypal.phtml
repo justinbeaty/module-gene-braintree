@@ -1,0 +1,61 @@
+<?php
+/* @var $this Gene_Braintree_Block_Paypal */
+?>
+<div class="form-list" id="payment_form_<?php echo $this->getMethodCode() ?>" style="display: none;">
+
+    <?php echo $this->getSavedChildHtml(); ?>
+
+    <div class="paypal-info"<?php echo ($this->hasSavedDetails() && $this->getMethod()->isVaultEnabled() ? ' style="display: none;"' : ''); ?>>
+        <p><?php echo $this->__('You will complete your payment via PayPal after the order review step.'); ?></p>
+
+        <?php if($this->canSavePayPal()): ?>
+            <input type="checkbox" title="<?php echo $this->__('Save this account for future use') ?>"
+                   class="input-checkbox" id="gene_braintree_paypal_store_in_vault" name="payment[save_paypal]"
+                   value="1"/>
+            <label for="gene_braintree_paypal_store_in_vault" style="float:none;"><?php echo $this->__(
+                    'Save this account for future use'
+                ) ?></label>
+        <?php endif; ?>
+
+        <?php /* Our hidden field to store the payment nonce */ ?>
+        <input type="hidden" name="payment[payment_method_nonce]" id="paypal-payment-nonce" />
+    </div>
+
+</div>
+
+<!-- Attach an event onto all radio buttons -->
+<script type="text/javascript">
+
+    // Set a flag to determine whether the PayPal flag is initialized
+    var PayPalInit = false;
+
+    // Wrap our logic in a function so we can init in different ways
+    initPayPal = function() {
+
+        // Verify that vzero is defined before attempting to use it
+        if (typeof vzeroPaypal !== 'undefined') {
+
+            // Yay we're good to go
+            PayPalInit = true;
+
+            // Always set the amount as it's needed within 3D secure requests
+            vzeroPaypal.setPricing('<?php echo Mage::helper('gene_braintree')->formatPrice(Mage::getSingleton('checkout/cart')->getQuote()->collectTotals()->getGrandTotal()); ?>', '<?php echo Mage::getSingleton('checkout/cart')->getQuote()->getQuoteCurrencyCode(); ?>');
+        }
+
+        if(typeof vzero !== 'undefined') {
+            vzero.paypalLoaded();
+        }
+
+    };
+
+    // Init PayPal on load
+    initPayPal();
+
+    // If the function didn't run on the load of the payment method do it on dom:loaded
+    if(!PayPalInit) {
+        document.observe('dom:loaded', function () {
+            initPayPal();
+        });
+    }
+
+</script>

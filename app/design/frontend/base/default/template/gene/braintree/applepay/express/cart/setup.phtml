@@ -1,0 +1,39 @@
+<?php if (!$this->isEnabled() || !$this->isEnabledCart()) return; ?>
+
+<script type="text/javascript">
+    if (typeof Translator !== 'object' && typeof Translate == 'object') {
+        var Translator = new Translate([]);
+    }
+
+    if (typeof Translator === 'object') {
+        Translator.add({
+            "We were unable to complete the request. Please try again.": "<?php echo $this->__('We were unable to complete the request. Please try again.'); ?>"
+        })
+    }
+
+    (function () {
+        document.observe("dom:loaded", function() {
+            var express = new BraintreeApplePayExpress(
+                '<?php echo $this->getToken(); ?>',
+                '<?php echo Mage::app()->getStore()->getFrontendName(); ?>',
+                '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                'cart',
+                {
+                    clientTokenUrl: '<?php echo $this->getUrl('braintree/applepay/clientToken'); ?>',
+                    submitUrl:      '<?php echo $this->getUrl('braintree/applepay/submit') ?>',
+                    fetchMethodsUrl:'<?php echo $this->getUrl('braintree/applepay/fetchShippingMethods'); ?>',
+                    successUrl:     '<?php echo $this->getUrl('checkout/onepage/success'); ?>'
+                },
+                {
+                    virtual:        <?php echo $this->getQuote()->isVirtual() ? 'true' : 'false'; ?>
+                }
+            );
+
+            // Pass over the quotes grand total for the amount
+            express.setAmount('<?php echo $this->getQuoteGrandTotal(); ?>');
+
+            // Attach our Apple Pay event onto the buttons
+            express.attachToButtons($$('[data-applepay]'));
+        });
+    })();
+</script>

@@ -1,0 +1,10 @@
+<?php
+/* @var $this Gene_Braintree_Block_Assets */
+?>
+<!-- Gene_Braintree (<?php echo base64_encode($this->getModuleVersion()); ?>) -->
+<?php foreach ($this->getExternalJs() as $js) : ?>
+<script src="<?php echo $this->getJsUrl($js); ?>"></script>
+<?php endforeach; ?>
+<?php foreach ($this->getJs() as $js) : ?>
+<script src="<?php echo $this->getJsUrl($js); ?>"></script>
+<?php endforeach; ?>

@@ -1,0 +1,174 @@
+<script type="text/javascript">
+    //<![CDATA[
+    // Pass some data over to vZero integration JS
+    var vzero = new vZero(
+        'gene_braintree_creditcard',
+        false,
+        false,
+        true,
+        ['order-billing_address_firstname', 'order-billing_address_lastname'],
+        ['order-billing_address_postcode'],
+        false,
+        false,
+        '<?php echo Mage::getUrl('braintree/checkout/clientToken', array(
+            '_secure' => Mage::app()->getFrontController()->getRequest()->isSecure(),
+            'store' => Mage::getSingleton('adminhtml/session_quote')->getStore()->getStoreId()
+        )); ?>'
+    );
+
+    // Pass the supported card types over to the front-end
+    vzero.setSupportedCards('<?php echo $this->getSupportedCardTypes(); ?>');
+
+    vZero.addMethods({
+        /**
+         * Update data has no value in the admin
+         */
+        updateData: function(callback, params) {
+            callback();
+        },
+
+        /**
+         * If the order value is 0 we don't need to intercept
+         *
+         * @returns {boolean}
+         */
+        shouldInterceptCreditCard: function() {
+            // Additional check to see if the label is present for the payment method
+            return ($('p_method_free') == null || ($('p_method_free') != null && !$('p_method_free').checked)) && $$('[for="p_method_gene_braintree_creditcard"]').length > 0;
+        }
+
+    });
+
+    vZeroIntegration.addMethods({
+
+        /**
+         * The loading instance is to just disable the save button within the admin
+         */
+        setLoading: function () {
+            disableElements('save');
+        },
+        resetLoading: function () {
+            enableElements('save');
+        },
+
+        /**
+         * Capture the original submit function
+         */
+        captureOriginalSubmitFn: function () {
+            this._originalSubmitFn = AdminOrder.prototype.submit;
+
+            // On dom load init hosted fields if it's enabled
+            document.observe("dom:loaded", function () {
+                this.paymentMethodSwitch();
+                this.initSavedMethods();
+            }.bind(this));
+
+            // Intercept any area of the checkout being updated
+            this.vzero.observeAjaxRequests(function() {
+                this.paymentMethodSwitch();
+                this.initSavedMethods();
+            }.bind(this));
+
+            return true;
+        },
+
+        /**
+         * Attach observer events for the submission of the page
+         */
+        prepareSubmitObserver: function () {
+
+            // Store a pointer to the vZero integration
+            var vzeroIntegration = this;
+
+            // Intercept the save function
+            AdminOrder.prototype.submit = function() {
+
+                // Should we intercept?
+                if (vzeroIntegration.shouldInterceptSubmit('creditcard')) {
+
+                    // Store a pointer to the payment class
+                    var paymentThis = this;
+                    var paymentArguments = arguments;
+
+                    // If everything was a success on the checkout end, let's submit the vZero integration
+                    vzeroIntegration.submit('creditcard', function () {
+                        return vzeroIntegration._originalSubmitFn.apply(paymentThis, paymentArguments);
+                    });
+
+                } else {
+                    return vzeroIntegration._originalSubmitFn.apply(this, arguments);
+                }
+
+            };
+
+        },
+
+        /**
+         * Observe the payment method switch
+         */
+        preparePaymentMethodSwitchObserver: function() {
+
+            // Store a pointer to the vZero integration
+            var vzeroIntegration = this;
+
+            // Store the original payment method
+            var paymentSwitchOriginal = AdminOrder.prototype.switchPaymentMethod;
+
+            // Intercept the save function
+            AdminOrder.prototype.switchPaymentMethod = function (method) {
+
+                // Run our method switch function
+                vzeroIntegration.paymentMethodSwitch(method);
+
+                // Run the original function
+                return paymentSwitchOriginal.apply(this, arguments);
+            };
+
+            // Attach an event for when the system is updated the areas
+            var loadAreaResponseHandlerOriginal = AdminOrder.prototype.loadAreaResponseHandler;
+            AdminOrder.prototype.loadAreaResponseHandler = function (response) {
+                var result = loadAreaResponseHandlerOriginal.apply(this, arguments);
+                vzeroIntegration.paymentMethodSwitch();
+                vzeroIntegration.initSavedMethods();
+                return result;
+            };
+
+            // Re-assign payment switch method
+            payment.switchMethod = order.switchPaymentMethod.bind(order);
+
+        },
+
+        /**
+         * Return the current payment method
+         *
+         * @returns {*}
+         */
+        getPaymentMethod: function() {
+            return order.paymentMethod;
+        },
+
+        /**
+         * The action to run after the payment processing is completed
+         * As we aren't using a onepage checkout, we have to use the submitPayment action
+         */
+        submitPayment: function() {
+            // Run the original checkouts submit action
+            return order.submit();
+        }
+
+    });
+
+    /**
+     * Start a new instance of our integration
+     *
+     * @type {vZeroIntegration}
+     */
+    var AdminVzero = new vZeroIntegration(vzero);
+
+    // stop Magento's card_validation ajax from running
+    AdminOrder.prototype._getPaymentDataOriginal = AdminOrder.prototype.getPaymentData;
+    AdminOrder.prototype.getPaymentData = function(currentMethod) {
+        return (currentMethod == 'gene_braintree_creditcard' || currentMethod == 'gene_braintree_paypal') ? false : this._getPaymentDataOriginal(currentMethod);
+    };
+    //]]>
+</script>

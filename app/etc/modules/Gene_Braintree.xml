@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Gene_Braintree>
+            <active>true</active>
+            <codePool>community</codePool>
+        </Gene_Braintree>
+    </modules>
+</config>

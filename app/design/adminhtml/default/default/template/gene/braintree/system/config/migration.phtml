@@ -1,0 +1,154 @@
+<div id="braintree-migration-overlay"></div>
+<div id="braintree-migration">
+    <div class="braintree-migration-header">
+        <div class="braintree-migration-logos">
+            <div class="braintree-migration-braintree-logo"></div>
+            <div class="braintree-migration-plus">+</div>
+            <div class="braintree-migration-gene-logo"></div>
+        </div>
+        <div class="braintree-migration-heading">
+            <h2><?php echo $this->__('Migration Wizard'); ?></h2>
+        </div>
+    </div>
+    <div class="braintree-migration-main">
+        <div class="braintree-migration-loading">
+            <h3><?php echo $this->__('Please wait whilst we run the migration...'); ?></h3>
+            <p><?php echo $this->__('For larger stores this may take a few minutes, please refrain from navigating away from this page.'); ?></p>
+        </div>
+        <form action="<?php echo Mage::helper('adminhtml')->getUrl('adminhtml/braintree_migration/run'); ?>" class="braintree-migration-content" method="post">
+            <?php echo $this->getBlockHtml('formkey'); ?>
+            <p><?php echo $this->__('We’ve detected that you have another Braintree module installed. This wizard enables you to easily import your settings and saved customer data into the Gene extension. It also gives you the option to remove the old modules code so you’re not running legacy code.'); ?></p>
+            <p><?php echo $this->__('Please select which actions you’d like to undertake below <em>(we\'ve checked our reccomended settings)</em>:'); ?></p>
+
+            <ul class="braintree-migration-options">
+                <li>
+                    <input type="checkbox" id="configuration-settings" name="migration[configuration-settings]" checked="checked">
+                    <label for="configuration-settings">
+                        <?php echo $this->__('Import Configuration Settings'); ?>
+                        <span><?php echo $this->__('This will import all merchant settings, and enable any methods at are already enabled in the previous module.'); ?></span>
+                    </label>
+                </li>
+                <li>
+                    <input type="checkbox" id="customer-data" name="migration[customer-data]" checked="checked">
+                    <label for="customer-data">
+                        <?php echo $this->__('Import Saved Customer Data'); ?>
+                        <span><?php echo $this->__('This will ensure that any customer data previously saved by customers will be displayed with the new module.'); ?></span>
+                    </label>
+                </li>
+                <li>
+                    <input type="checkbox" id="order-transaction-info" name="migration[order-transaction-info]" checked="checked">
+                    <label for="order-transaction-info">
+                        <?php echo $this->__('Import Order Transaction Information'); ?>
+                        <span><?php echo $this->__('Ensure any orders created with the old extension can still be viewed with only the new extension installed. <strong>This is required if you remove all legacy files.</strong>'); ?></span>
+                    </label>
+                </li>
+                <li>
+                    <input type="checkbox" id="disable-legacy" name="migration[disable-legacy]" checked="checked">
+                    <label for="disable-legacy">
+                        <?php echo $this->__('Disable Legacy Braintree Module'); ?>
+                        <span><input type="checkbox" id="remove-legacy" name="migration[remove-legacy]" onclick="checkTransactionIsChecked();"> <?php echo $this->__('Remove all legacy module files. <strong>This step is not reversible, it will remove all legacy files and config settings. Removing the original Braintree_Payments module will also disable this migration tool from being ran again.</strong>'); ?></span>
+                    </label>
+                </li>
+            </ul>
+
+            <div class="braintree-migration-buttons">
+                <button type="button" class="gene-migration-button gene-migration-cancel"><?php echo $this->__('Cancel'); ?></button>
+                <button type="submit" class="gene-migration-button gene-migration-run"><?php echo $this->__('Run Migration'); ?></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<?php if (Mage::helper('gene_braintree')->shouldRunMigration()): ?>
+<script type="text/javascript">
+    document.observe("dom:loaded", function() {
+        showMigration();
+    });
+</script>
+<?php endif; ?>
+
+<script type="text/javascript">
+    /**
+     * Show the migration
+     *
+     * @returns {boolean}
+     */
+    function showMigration() {
+        $$('.braintree-migration-loading h3').first().show();
+        $$('.braintree-migration-loading p').first().show();
+        $('braintree-migration').removeClassName('loading');
+
+        $('braintree-migration-overlay').addClassName('active');
+        $('braintree-migration').addClassName('active');
+        return false;
+    }
+
+    /**
+     * Automatically check the order transaction info box if they opt to remove the legacy module
+     *
+     * @returns {boolean}
+     */
+    function checkTransactionIsChecked() {
+        if ($('remove-legacy').checked) {
+            $('order-transaction-info').checked = true;
+        }
+    }
+
+    // Migration submit action
+    Element.observe($$('.braintree-migration-content').first(), 'submit', function (event) {
+        Event.stop(event);
+        var form = Event.element(event),
+            action = form.readAttribute('action');
+
+        // Set the class name to loading to change the UI
+        $('braintree-migration').addClassName('loading');
+
+        // Create an ajax request to the server
+        new Ajax.Request(
+            action,
+            {
+                method: 'post',
+                parameters: form.serialize(true),
+                onSuccess: function (transport) {
+                    if (transport && transport.responseJSON) {
+                        if (transport.responseJSON.success == true) {
+                            // The migration was a success, reload the page
+                            return location.reload();
+                        }
+                    }
+                }.bind(this),
+                onFailure: function () {
+                    alert('<?php $this->__('An issue has occurred whilst running the migration, please contact a member of support.'); ?>');
+                }
+            }
+        );
+    });
+
+    // Cancel action
+    Element.observe($$('.gene-migration-cancel').first(), 'click', function (event) {
+        Event.stop(event);
+
+        // Show a loading state
+        $$('.braintree-migration-loading h3').first().hide();
+        $$('.braintree-migration-loading p').first().hide();
+        $('braintree-migration').addClassName('loading');
+
+        new Ajax.Request(
+            '<?php echo Mage::helper('adminhtml')->getUrl('adminhtml/braintree_migration/cancel'); ?>',
+            {
+                method: 'get',
+                onSuccess: function (transport) {
+                    if (transport && transport.responseJSON) {
+                        if (transport.responseJSON.success == true) {
+                            $('braintree-migration-overlay').removeClassName('active');
+                            $('braintree-migration').removeClassName('active');
+                        }
+                    }
+                },
+                onFailure: function () {
+                    alert('<?php $this->__('An issue has occurred whilst cancelling the migration, please contact a member of support.'); ?>');
+                }
+            }
+        );
+    });
+</script>

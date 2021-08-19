@@ -1,0 +1,52 @@
+<?php
+/** @var $this Gene_Braintree_Block_Express_Setup */
+if (!$this->isEnabledCart()) {
+    return;
+}
+?>
+
+<script type="text/javascript">
+    if (typeof Translator !== 'object' && typeof Translate == 'object') {
+        var Translator = new Translate([]);
+    }
+
+    if (typeof Translator === 'object') {
+        Translator.add({
+            "We were unable to complete the request. Please try again.": "<?php echo $this->__('We were unable to complete the request. Please try again.'); ?>",
+            "Checkout with PayPal": "<?php echo $this->__("Checkout with PayPal"); ?>"
+        })
+    }
+
+    (function () {
+        document.observe("dom:loaded", function() {
+            var express = new BraintreePayPalExpress(
+                false,
+                '<?php echo addslashes(Mage::app()->getStore()->getFrontendName()); ?>',
+                '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
+                'cart',
+                {
+                    clientTokenUrl: '<?php echo $this->getUrl('braintree/checkout/clientToken') ?>',
+                    authUrl:        '<?php echo $this->getUrl('braintree/express/authorization') ?>',
+                    shippingSaveUrl:'<?php echo $this->getUrl('braintree/express/saveShipping') ?>',
+                    couponSaveUrl:  '<?php echo $this->getUrl('braintree/express/saveCoupon') ?>',
+                    successUrl:     '<?php echo $this->getUrl("checkout/onepage/success"); ?>',
+                },
+                {
+                    locale:         '<?php echo $this->getStoreLocale(); ?>',
+                    total:          '<?php echo $this->getProductTotals(); ?>',
+                    currency:       '<?php echo $this->getStoreCurrency(); ?>',
+                    env:            '<?php echo $this->getEnv() ?>',
+                    displayName:    '<?php echo addslashes(Mage::app()->getStore()->getFrontendName()); ?>',
+                    buttonStyle:    <?php echo $this->getStyleConfig('cart_primary'); ?>,
+                    token:          '<?php echo $this->getToken(); ?>',
+                    singleUse:      <?php echo $this->getSingleUse(); ?>,
+                    funding:        {<?php echo $this->getFunding(); ?>}
+                }
+            );
+            express.attachToButtons($$('[data-paypalexpress]'));
+
+            // Expose the ppExpress object to the window for backwards compatibility
+            window.ppExpress = express;
+        });
+    })();
+</script>

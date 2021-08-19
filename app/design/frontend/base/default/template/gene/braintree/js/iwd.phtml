@@ -1,0 +1,203 @@
+<?php
+/**
+ * Add in support for IWD One Step Checkout
+ * https://www.iwdagency.com/extensions/one-step-page-checkout.html
+ * @author Dave Macaulay <braintreesupport@gene.co.uk>
+ */
+?>
+<!-- IWD BRAINTREE SUPPORT -->
+<script type="text/javascript">
+
+    // Make sure the checkout running variable is always available
+    checkoutRunning = window.checkoutRunning || false;
+
+    // Some versions of IWD seem to use the $j variable
+    $iwdjQuery = false;
+    if(typeof $j_opc !== 'undefined') {
+        $iwdjQuery = $j_opc
+    } else if(typeof $j_opc === 'undefined' && typeof $j !== 'undefined') {
+        $iwdjQuery = $j;
+    }
+
+    /**
+     * Override the observeAjaxRequest to add in observing the $j_opc variable
+     */
+    vZero.addMethods({
+        observeAjaxRequests: function(callback, ignore) {
+            // Is jQuery present on the page
+            if (window.$iwdjQuery) {
+                $iwdjQuery(document).ajaxComplete(function(event, xhr, settings) {
+                    return this.handleAjaxRequest(settings.url, callback, ignore)
+                }.bind(this));
+            }
+        }
+    });
+
+    vZeroIntegration.addMethods({
+
+        /**
+         * Validate the entire checkout
+         * Annoyingly IWD hasn't already wrapped this in a function
+         */
+        validateAll: function() {
+            var addressForm = new VarienForm('opc-address-form-billing');
+            if (!addressForm.validator.validate()){
+                return false;
+            }
+            if (!$iwdjQuery('input[name="billing[use_for_shipping]"]').prop('checked')){
+                var shippingAddressForm = new VarienForm('opc-address-form-shipping');
+                if (!shippingAddressForm.validator.validate()){
+                    return false;
+                }
+            }
+            if (IWD.OPC.Checkout.isVirtual === false) {
+                if (IWD.OPC.Shipping.validateShippingMethod() === false) {
+                    $iwdjQuery('.opc-message-container').html($iwdjQuery('#pssm_msg').html());
+                    $iwdjQuery('.opc-message-wrapper').show();
+                    IWD.OPC.Checkout.hideLoader();
+                    return false;
+                }
+            }
+            return true;
+        },
+
+        /**
+         * Activate the loading state of this checkout
+         */
+        setLoading: function() {
+            checkoutRunning = true;
+            $iwdjQuery('.opc-ajax-loader').show();
+            IWD.OPC.Checkout.lockPlaceOrder();
+        },
+
+        /**
+         * Reset the loading state of the checkout
+         */
+        resetLoading: function() {
+            checkoutRunning = false;
+            // Manually hide this, as otherwise it has a timeout
+            $iwdjQuery('.opc-ajax-loader').hide();
+            IWD.OPC.Checkout.unlockPlaceOrder();
+        },
+
+        /**
+         * Capture the original submit function
+         */
+        captureOriginalSubmitFn: function () {
+            this._originalSavePaymentFn = IWD.OPC.savePayment;
+            this._originalSubmitFn = IWD.OPC.saveOrder;
+            this._originalBindChangePaymentFieldsFn = IWD.OPC.bindChangePaymentFields;
+            this._originalValidatePaymentFn = IWD.OPC.validatePayment;
+            return true;
+        },
+
+        /**
+         * Attach an observer to the submit action of the checkout to tokenize the card details
+         */
+        prepareSubmitObserver: function() {
+
+            // Store a pointer to the vZero integration
+            var vzeroIntegration = this;
+
+            IWD.OPC.savePayment = function () {
+
+                // Never call this bizarre function for our method
+                if (vzeroIntegration.shouldInterceptSubmit('creditcard')) {
+
+                    // Are we actually trying to save the order?
+                    if (IWD.OPC.saveOrderStatus === true){
+
+                        // The original IWD checkout runs these various functions in the payment response
+                        IWD.OPC.Checkout.xhr = null;
+                        IWD.OPC.agreements = $iwdjQuery('#checkout-agreements').serializeArray();
+                        IWD.OPC.getSubscribe();
+
+                        // Save the order
+                        IWD.OPC.saveOrder();
+                    }
+
+                    return false;
+                }
+
+                // Don't run this function with our method
+                if (IWD.OPC.saveOrderStatus !== true && (vzeroIntegration.getPaymentMethod() == 'gene_braintree_paypal' || vzeroIntegration.getPaymentMethod() == 'gene_braintree_creditcard')) {
+                    return false;
+                }
+
+                // Run the original method
+                return vzeroIntegration._originalSavePaymentFn.apply(this, arguments);
+
+            };
+
+            // Intercept the save order to process the credit card
+            IWD.OPC.saveOrder = function() {
+
+                if (vzeroIntegration.shouldInterceptSubmit('creditcard')) {
+
+                    // Store a pointer to the payment class
+                    var paymentThis = this;
+                    var paymentArguments = arguments;
+
+                    // If everything was a success on the checkout end, let's submit the vZero integration
+                    vzeroIntegration.submit('creditcard', function () {
+                        return vzeroIntegration._originalSubmitFn.apply(paymentThis, paymentArguments);
+                    });
+
+                } else {
+                    // If not run the original code
+                    return vzeroIntegration._originalSubmitFn.apply(this, arguments);
+                }
+
+            };
+
+            // When IWD binds payment fields we wanna init
+            IWD.OPC.bindChangePaymentFields = function() {
+                vzeroIntegration.paymentMethodSwitch();
+                return vzeroIntegration._originalBindChangePaymentFieldsFn.apply(this, arguments);
+            };
+
+            // Stop the system from validating the credit card hosted fields form for hosted fields
+            IWD.OPC.validatePayment = function () {
+                if (
+                    IWD.OPC.saveOrderStatus === true ||
+                    (
+                        vzeroIntegration.getPaymentMethod() != 'gene_braintree_applepay' &&
+                        vzeroIntegration.getPaymentMethod() != 'gene_braintree_creditcard'
+                    )
+                ) {
+                    return vzeroIntegration._originalValidatePaymentFn.apply(this, arguments);
+                }
+            };
+
+        },
+
+        /**
+         * The action to run after the PayPal action has been completed
+         */
+        submitCheckout: function() {
+            // Run the original checkouts submit action
+            $iwdjQuery('.opc-btn-checkout').click();
+        }
+
+    });
+
+    /**
+     * Start a new instance of our integration
+     *
+     * @type {vZeroIntegration}
+     */
+    new vZeroIntegration(
+        (window.vzero || false),
+        (window.vzeroPaypal || false),
+        '<div id="paypal-complete"><div id="paypal-container"></div></div>',
+        '.opc-btn-checkout',
+        true,
+        {
+            ignoreAjax: [
+                'onepage/json/saveOrder',
+                'onepage/json/review'
+            ]
+        }
+    );
+
+</script>

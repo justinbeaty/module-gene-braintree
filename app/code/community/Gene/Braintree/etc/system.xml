@@ -1,0 +1,1576 @@
+<?xml version="1.0"?>
+<config>
+    <sections>
+        <payment>
+            <groups>
+                <gene_braintree translate="label comment" module="gene_braintree">
+                    <label>Braintree Payments - Configuration</label>
+                    <sort_order>1498</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <comment><![CDATA[
+                        <div class="braintree-logos" style="float: left;width: 100%;margin: 8px 0 24px 0;">
+                            <img src="/skin/frontend/base/default/images/gene/braintree/braintree-logo-black.png" height="36" style="display: inline-block; vertical-align: middle;" border="0" />
+                            <div style="display: inline-block;padding: 0 14px;vertical-align: middle;opacity: 0.7;">by</div>
+                            <a href="http://support.gene.co.uk/" title="Gene Commerce" target="_blank"><img src="https://i.imgur.com/OAXtYNg.png" style="display: inline-block;vertical-align: middle;" height="36" /></a>
+                        </div>
+                        To use this module you will need an existing production or sandbox Braintree account. You can apply at <a href="https://www.braintreepayments.com">braintreepayments.com</a>.<br />Braintree Payments integration provided by <a href="http://gene.co.uk/" target="_blank">Gene Commerce</a>.
+                    ]]></comment>
+                    <fields>
+
+                        <module_version translate="label">
+                            <label>Magento Braintree Payments Version</label>
+                            <frontend_model>gene_braintree/adminhtml_system_config_braintree_moduleversion</frontend_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </module_version>
+
+                        <lib_version translate="label">
+                            <label>Braintree PHP SDK Version</label>
+                            <frontend_model>gene_braintree/adminhtml_system_config_braintree_version</frontend_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </lib_version>
+
+                        <migration translate="label">
+                            <label>Migrate from Legacy Braintree</label>
+                            <frontend_model>gene_braintree/adminhtml_system_config_braintree_migration</frontend_model>
+                            <sort_order>25</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </migration>
+
+                        <braintree_details translate="label">
+                            <label>Braintree Account Details</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </braintree_details>
+
+                        <environment translate="label comment">
+                            <label>Environment</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_environment</source_model>
+                            <sort_order>31</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[
+                                <strong>Warning:</strong> Do not use 'Sandbox' on a production environment.<br />
+                                Your API details above will need to reflect your Sandbox or your Production account.
+                            ]]></comment>
+                            <frontend_class>validate-config</frontend_class>
+                        </environment>
+
+                        <merchant_id translate="label">
+                            <label>Merchant ID</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>35</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <frontend_class>validate-config</frontend_class>
+                            <depends>
+                                <environment>production</environment>
+                            </depends>
+                        </merchant_id>
+
+                        <merchant_account_id translate="label">
+                            <label>Merchant Account ID</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <frontend_class>validate-config</frontend_class>
+                            <comment><![CDATA[
+                                If you're accepting different currencies across multiple store views/websites you'll need to adjust your merchant account ID in the correct scope, if you're using the Magento currency switcher you'll need to enable the section below.<br />
+                                <a href="https://articles.braintreepayments.com/control-panel/important-gateway-credentials#merchant-account-id" target="_blank">Find out more about merchant accounts.</a>
+                            ]]></comment>
+                            <depends>
+                                <environment>production</environment>
+                            </depends>
+                        </merchant_account_id>
+
+                        <public_key translate="label">
+                            <label>Public Key</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>45</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <frontend_class>validate-config</frontend_class>
+                            <depends>
+                                <environment>production</environment>
+                            </depends>
+                        </public_key>
+
+                        <private_key translate="label">
+                            <label>Private Key</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <frontend_class>validate-config</frontend_class>
+                            <depends>
+                                <environment>production</environment>
+                            </depends>
+                        </private_key>
+
+                        <sandbox_merchant_id translate="label">
+                            <label>Sandbox Merchant ID</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>35</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <frontend_class>validate-config</frontend_class>
+                            <depends>
+                                <environment>sandbox</environment>
+                            </depends>
+                        </sandbox_merchant_id>
+
+                        <sandbox_merchant_account_id translate="label">
+                            <label>Sandbox Merchant Account ID</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <frontend_class>validate-config</frontend_class>
+                            <comment><![CDATA[
+                                If you're accepting different currencies across multiple store views/websites you'll need to adjust your merchant account ID in the correct scope, if you're using the Magento currency switcher you'll need to enable the section below.<br />
+                                <a href="https://articles.braintreepayments.com/control-panel/important-gateway-credentials#merchant-account-id" target="_blank">Find out more about merchant accounts.</a>
+                            ]]></comment>
+                            <depends>
+                                <environment>sandbox</environment>
+                            </depends>
+                        </sandbox_merchant_account_id>
+
+                        <sandbox_public_key translate="label">
+                            <label>Sandbox Public Key</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>45</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <frontend_class>validate-config</frontend_class>
+                            <depends>
+                                <environment>sandbox</environment>
+                            </depends>
+                        </sandbox_public_key>
+
+                        <sandbox_private_key translate="label">
+                            <label>Sandbox Private Key</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <frontend_class>validate-config</frontend_class>
+                            <depends>
+                                <environment>sandbox</environment>
+                            </depends>
+                        </sandbox_private_key>
+
+                        <valid_config translate="label">
+                            <label />
+                            <frontend_model>gene_braintree/adminhtml_system_config_braintree_config</frontend_model>
+                            <sort_order>55</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </valid_config>
+
+                        <multi_currency_heading translate="label">
+                            <label>Currency Switcher</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </multi_currency_heading>
+
+                        <multi_currency_enable>
+                            <label>Enabled?</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>65</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[
+                                If you're using the Magento built in currency switcher you'll need to activate this section to ensure the customers payment goes into your correct merchant account. If you use store views for separate countries you do not need this feature enabled. <br /><strong>Note:</strong> The invoices will still show up as your base currency, but the customer will be charged in their selected currency for the correct amount.
+                            ]]></comment>
+                        </multi_currency_enable>
+
+                        <multi_currency_mapping translate="label">
+                            <label>Mapping</label>
+                            <backend_model>gene_braintree/system_config_backend_currency</backend_model>
+                            <frontend_model>gene_braintree/adminhtml_system_config_braintree_currency</frontend_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <multi_currency_enable>1</multi_currency_enable>
+                            </depends>
+                            <comment><![CDATA[
+                                You need to supply each merchant account ID for each enabled currency.
+                            ]]></comment>
+                        </multi_currency_mapping>
+
+                        <settings translate="label">
+                            <label>Testing Settings</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </settings>
+
+                        <debug translate="label comment">
+                            <label>Debug</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>85</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[
+                                Debugging will cause a log to be written to the <strong>var/log/gene_braintree.log</strong> file. As no credit card data ever hits the server this file will never contain any crucial customer information.
+                            ]]></comment>
+                        </debug>
+
+                    </fields>
+                </gene_braintree>
+
+                <gene_braintree_paypal translate="label comment" module="gene_braintree">
+                    <label>Braintree Payments - PayPal</label>
+                    <sort_order>1499</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <comment><![CDATA[
+                        <img alt="PayPal powered by Braintree" width="220" src="https://s3-us-west-1.amazonaws.com/bt-partner-assets/paypal-braintree.png" style="margin: 8px 0 10px 0;" /><br />
+                        You must first configure the <strong>Braintree Payments - Configuration</strong> section with your Braintree account details.]]>
+                    </comment>
+                    <fields>
+
+                        <active translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </active>
+
+                        <title translate="label">
+                            <label>Title</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </title>
+
+                        <express_heading translate="label">
+                            <label>PayPal Express</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </express_heading>
+
+                        <express_active translate="label">
+                            <label>Enable Express Checkout</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                PayPal Express functionality allows customers to checkout directly with PayPal instead of using the default checkout.
+                                ]]>
+                            </comment>
+                        </express_active>
+
+                        <express_cart>
+                            <label>Enable on Cart</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><express_active>1</express_active></depends>
+                            <comment>
+                                <![CDATA[
+                                Allow customers to complete their order via PayPal express, this will complete the entire quote.
+                                ]]>
+                            </comment>
+                        </express_cart>
+
+                        <express_pdp>
+                            <label>Enable on Product Page</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><express_active>1</express_active></depends>
+                            <comment>
+                                <![CDATA[
+                                Allow customers to checkout directly from the product page using PayPal express. This will allow them to only checkout with the currently viewed item.
+                                ]]>
+                                </comment>
+                        </express_pdp>
+
+                        <express_link_guest>
+                            <label>Link Guest Orders to Customers</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>71</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><express_active>1</express_active></depends>
+                            <comment>
+                                <![CDATA[
+                                If an existing customer makes an express order using their customer account email should we link the guest order to their customer account?
+                                ]]>
+                            </comment>
+                        </express_link_guest>
+
+                        <capture_heading translate="label">
+                            <label>Capture</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </capture_heading>
+
+                        <payment_action translate="label comment">
+                            <label>Payment Action</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_paypal_paymentAction</source_model>
+                            <sort_order>91</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[
+                                <strong>Authorize</strong> - Will only auth the payment and store a token, the transaction will not be settled.<br />
+                                <strong>Authorize & Capture</strong> - We will instantly settle the transaction within the checkout.
+                            ]]></comment>
+                        </payment_action>
+
+                        <capture_action translate="label comment">
+                            <label>Capture Action</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_paypal_captureAction</source_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[
+                                If you're just authorizing transactions you can define at what point they should be submitted for settlement.
+                            ]]></comment>
+                            <depends>
+                                <payment_action>authorize</payment_action>
+                            </depends>
+                        </capture_action>
+
+                        <order_status translate="label">
+                            <label>Complete Order Status</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_order_status_processing</source_model>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </order_status>
+
+                        <features_heading translate="label">
+                            <label>Features</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </features_heading>
+
+                        <disabled_funding translate="label">
+                            <label>Disable Funding Options</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <sort_order>121</sort_order>
+                            <source_model>gene_braintree/source_paypal_funding</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                    PayPal will automatically display each enabled funding option to eligible buyers.
+                                    For example, PayPal Credit is only shown to buyers in countries where PayPal Credit is offered and the currency offered by the merchant is USD.
+                                ]]>
+                            </comment>
+                            <can_be_empty>1</can_be_empty>
+                        </disabled_funding>
+
+                        <payment_type translate="label comment">
+                            <label>Payment Type</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_paypal_paymenttype</source_model>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[
+                                <strong>Checkout</strong> - Will only require the customer to sign in, we will only be able to take a single payment.<br />
+                                <strong>Vault</strong> - Allows us to save the customers PayPal account for later purchases and use with the Vault.<br />
+                                <a href="https://developers.braintreepayments.com/guides/paypal/overview/javascript/v2#vault-vs.-checkout" target="_blank">View more information</a>
+                            ]]></comment>
+                        </payment_type>
+
+                        <use_vault translate="label comment">
+                            <label>Enable Vault</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>140</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <payment_type>future</payment_type>
+                            </depends>
+                            <comment><![CDATA[
+                                Storing the customers PayPal in the vault will allow them to instantly purchase any product without having to login to PayPal again.
+                            ]]></comment>
+                        </use_vault>
+
+                        <use_vault_only_on_vault translate="label comment">
+                            <label>Vault Flow only for Vault Requests</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>145</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <payment_type>future</payment_type>
+                                <use_vault>1</use_vault>
+                            </depends>
+                            <comment><![CDATA[
+                                Use the checkout flow for all transactions that the customer has not opted into having their PayPal account saved. This can improve conversion rates as the Vault flow requests the customer setup a billing agreement.
+                            ]]></comment>
+                        </use_vault_only_on_vault>
+
+                        <locale translate="label comment">
+                            <label>Locale</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_paypal_locale</source_model>
+                            <sort_order>150</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[
+                                The locale for the PayPal popup window
+                            ]]></comment>
+                        </locale>
+
+                        <allowspecific translate="label">
+                            <label>Payment from Applicable Countries</label>
+                            <frontend_type>allowspecific</frontend_type>
+                            <sort_order>155</sort_order>
+                            <source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </allowspecific>
+
+                        <specificcountry translate="label">
+                            <label>Payment from Specific Countries</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <sort_order>160</sort_order>
+                            <source_model>adminhtml/system_config_source_country</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </specificcountry>
+
+                        <display_heading translate="label">
+                            <label>Display</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>165</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </display_heading>
+
+                        <sort_order translate="label">
+                            <label>Sort Order in the Checkout</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>170</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </sort_order>
+
+
+                        <button_style_cart_primary_heading translate="label">
+                            <label>Display - PayPal Express Button - Primary Button on the Cart Page</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>180</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <express_cart>1</express_cart>
+                                <express_active>1</express_active>
+                            </depends>
+                        </button_style_cart_primary_heading>
+                        <button_style_cart_primary_customise translate="label">
+                            <label>Customise Button</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>181</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <express_cart>1</express_cart>
+                                <express_active>1</express_active>
+                            </depends>
+                            <comment><![CDATA[
+                                The Primary button is located at the bottom of the page near the "Grand Total" amount.
+                            ]]></comment>
+                        </button_style_cart_primary_customise>
+                        <button_style_cart_primary_layout translate="label">
+                            <label>Layout</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_buttonStyle_layout</source_model>
+                            <sort_order>182</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <express_cart>1</express_cart>
+                                <express_active>1</express_active>
+                                <button_style_cart_primary_customise>1</button_style_cart_primary_customise>
+                            </depends>
+                        </button_style_cart_primary_layout>
+                        <button_style_cart_primary_size translate="label">
+                            <label>Size</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_buttonStyle_size</source_model>
+                            <sort_order>183</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <express_cart>1</express_cart>
+                                <express_active>1</express_active>
+                                <button_style_cart_primary_customise>1</button_style_cart_primary_customise>
+                            </depends>
+                        </button_style_cart_primary_size>
+                        <button_style_cart_primary_shape translate="label">
+                            <label>Shape</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_buttonStyle_shape</source_model>
+                            <sort_order>184</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <express_cart>1</express_cart>
+                                <express_active>1</express_active>
+                                <button_style_cart_primary_customise>1</button_style_cart_primary_customise>
+                            </depends>
+                        </button_style_cart_primary_shape>
+                        <button_style_cart_primary_color translate="label">
+                            <label>Color</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_buttonStyle_color</source_model>
+                            <sort_order>185</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <express_cart>1</express_cart>
+                                <express_active>1</express_active>
+                                <button_style_cart_primary_customise>1</button_style_cart_primary_customise>
+                            </depends>
+                        </button_style_cart_primary_color>
+
+                        <button_style_cart_secondary_heading translate="label">
+                            <label>Display - PayPal Express Button - Secondary Button on the Cart Page</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>186</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <express_cart>1</express_cart>
+                                <express_active>1</express_active>
+                            </depends>
+                        </button_style_cart_secondary_heading>
+                        <button_style_cart_secondary_customise translate="label">
+                            <label>Customise Button</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>187</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <express_cart>1</express_cart>
+                                <express_active>1</express_active>
+                            </depends>
+                            <comment><![CDATA[
+                                The Secondary button is located at the top of the Cart page.
+                            ]]></comment>
+                        </button_style_cart_secondary_customise>
+                        <button_style_cart_secondary_layout translate="label">
+                            <label>Layout</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_buttonStyle_layout</source_model>
+                            <sort_order>188</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <express_cart>1</express_cart>
+                                <express_active>1</express_active>
+                                <button_style_cart_secondary_customise>1</button_style_cart_secondary_customise>
+                            </depends>
+                        </button_style_cart_secondary_layout>
+                        <button_style_cart_secondary_size translate="label">
+                            <label>Size</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_buttonStyle_size</source_model>
+                            <sort_order>189</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <express_cart>1</express_cart>
+                                <express_active>1</express_active>
+                                <button_style_cart_secondary_customise>1</button_style_cart_secondary_customise>
+                            </depends>
+                        </button_style_cart_secondary_size>
+                        <button_style_cart_secondary_shape translate="label">
+                            <label>Shape</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_buttonStyle_shape</source_model>
+                            <sort_order>190</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <express_cart>1</express_cart>
+                                <express_active>1</express_active>
+                                <button_style_cart_secondary_customise>1</button_style_cart_secondary_customise>
+                            </depends>
+                        </button_style_cart_secondary_shape>
+                        <button_style_cart_secondary_color translate="label">
+                            <label>Color</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_buttonStyle_color</source_model>
+                            <sort_order>191</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <express_cart>1</express_cart>
+                                <express_active>1</express_active>
+                                <button_style_cart_secondary_customise>1</button_style_cart_secondary_customise>
+                            </depends>
+                        </button_style_cart_secondary_color>
+
+                        <button_style_product_heading translate="label">
+                            <label>Display - PayPal Express Button - Product Page</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>240</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <express_cart>1</express_cart>
+                                <express_active>1</express_active>
+                            </depends>
+                        </button_style_product_heading>
+                        <button_style_product_customise translate="label">
+                            <label>Customise Button</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>250</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <express_pdp>1</express_pdp>
+                                <express_active>1</express_active>
+                            </depends>
+                        </button_style_product_customise>
+                        <button_style_product_layout translate="label">
+                            <label>Layout</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_buttonStyle_layout</source_model>
+                            <sort_order>260</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <button_style_product_customise>1</button_style_product_customise>
+                                <express_pdp>1</express_pdp>
+                                <express_active>1</express_active>
+                            </depends>
+                        </button_style_product_layout>
+                        <button_style_product_size translate="label">
+                            <label>Size</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_buttonStyle_size</source_model>
+                            <sort_order>270</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <button_style_product_customise>1</button_style_product_customise>
+                                <express_pdp>1</express_pdp>
+                                <express_active>1</express_active>
+                            </depends>
+                        </button_style_product_size>
+                        <button_style_product_shape translate="label">
+                            <label>Shape</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_buttonStyle_shape</source_model>
+                            <sort_order>280</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <button_style_product_customise>1</button_style_product_customise>
+                                <express_pdp>1</express_pdp>
+                                <express_active>1</express_active>
+                            </depends>
+                        </button_style_product_shape>
+                        <button_style_product_color translate="label">
+                            <label>Color</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_buttonStyle_color</source_model>
+                            <sort_order>290</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <button_style_product_customise>1</button_style_product_customise>
+                                <express_pdp>1</express_pdp>
+                                <express_active>1</express_active>
+                            </depends>
+                        </button_style_product_color>
+
+                        <button_style_checkout_heading translate="label">
+                            <label>Display - PayPal Button - Checkout</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>309</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </button_style_checkout_heading>
+                        <button_style_checkout_customise translate="label">
+                            <label>Customise Button</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>310</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[
+                                Customise the display of the PayPal button in the Checkout.
+                            ]]></comment>
+                        </button_style_checkout_customise>
+                        <button_style_checkout_layout translate="label">
+                            <label>Layout</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_buttonStyle_layout</source_model>
+                            <sort_order>320</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <button_style_checkout_customise>1</button_style_checkout_customise>
+                            </depends>
+                        </button_style_checkout_layout>
+                        <button_style_checkout_size translate="label">
+                            <label>Size</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_buttonStyle_size</source_model>
+                            <sort_order>330</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <button_style_checkout_customise>1</button_style_checkout_customise>
+                            </depends>
+                        </button_style_checkout_size>
+                        <button_style_checkout_shape translate="label">
+                            <label>Shape</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_buttonStyle_shape</source_model>
+                            <sort_order>340</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <button_style_checkout_customise>1</button_style_checkout_customise>
+                            </depends>
+                        </button_style_checkout_shape>
+                        <button_style_checkout_color translate="label">
+                            <label>Color</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_buttonStyle_color</source_model>
+                            <sort_order>350</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <button_style_checkout_customise>1</button_style_checkout_customise>
+                            </depends>
+                        </button_style_checkout_color>
+
+                    </fields>
+                </gene_braintree_paypal>
+
+                <gene_braintree_creditcard translate="label comment" module="gene_braintree">
+                    <label>Braintree Payments - Credit Card</label>
+                    <sort_order>1500</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <comment>
+                        <![CDATA[
+                            <img src="/skin/frontend/base/default/images/gene/braintree/braintree-logo-black.png" height="30" style="margin-top: 6px; display: inline-block; vertical-align: middle;" border="0" /><br />
+                            <img src="https://s3-us-west-1.amazonaws.com/bt-partner-assets/payment-method-cards.png" style="margin: 12px 0 10px 0;" alt="Accept Visa, Mastercard, Discover, and American Express payments" width="140"><br />
+                            You must first configure the <strong>Braintree Payments - Configuration</strong> section with your Braintree account details.
+                        ]]>
+                    </comment>
+                    <fields>
+
+                        <active translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </active>
+
+                        <title translate="label">
+                            <label>Title</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </title>
+
+                        <capture_heading translate="label">
+                            <label>Capture</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </capture_heading>
+
+                        <payment_action translate="label comment">
+                            <label>Payment Action</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_creditcard_paymentAction</source_model>
+                            <sort_order>9</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[
+                                <strong>Authorize</strong> - Will only auth the payment and store a token, the transaction will not be settled.<br />
+                                <strong>Authorize & Capture</strong> - We will instantly settle the transaction within the checkout.
+                            ]]></comment>
+                        </payment_action>
+
+                        <capture_action translate="label comment">
+                            <label>Capture Action</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_creditcard_captureAction</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[
+                                If you're just authorizing transactions you can define at what point they should be submitted for settlement.
+                            ]]></comment>
+                            <depends>
+                                <payment_action>authorize</payment_action>
+                            </depends>
+                        </capture_action>
+
+                        <order_status translate="label">
+                            <label>New Order Status</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_order_status_processing</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </order_status>
+
+                        <features_heading translate="label">
+                            <label>Features</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </features_heading>
+
+                        <use_vault translate="label comment">
+                            <label>Enable Vault/Saved Cards</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>75</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[
+                                The vault allows you to securely store the customers credit card on Braintree's servers. We're provided with a token which allows the customer to make future payments without having to enter any details again.
+                            ]]></comment>
+                        </use_vault>
+
+                        <useccv translate="label comment">
+                            <label>CVV Verification</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>78</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[
+                                Should we verify the CVV against the card?
+                            ]]></comment>
+                        </useccv>
+
+                        <cctypes translate="label">
+                            <label>Credit Card Types</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>gene_braintree/source_cctype</source_model>
+                            <sort_order>85</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </cctypes>
+
+                        <display_cctypes translate="label comment">
+                            <label>Display Card Types</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>86</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[
+                                Display the accepted card types on the checkout.
+                            ]]></comment>
+                        </display_cctypes>
+
+                        <hostedfields_descriptor>
+                            <!-- Previously "Hosted Fields Descriptor" pre 2.3.0 -->
+                            <label>Card Fields Descriptor</label>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <sort_order>41</sort_order>
+                            <frontend_type>textarea</frontend_type>
+                            <comment><![CDATA[
+                                Display a message above the card details section on the checkout.
+                            ]]></comment>
+                            <depends>
+                                <form_integration>hosted</form_integration>
+                            </depends>
+                        </hostedfields_descriptor>
+
+                        <allowspecific translate="label">
+                            <label>Payment from Applicable Countries</label>
+                            <frontend_type>allowspecific</frontend_type>
+                            <sort_order>90</sort_order>
+                            <source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </allowspecific>
+
+                        <specificcountry translate="label">
+                            <label>Payment from Specific Countries</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <sort_order>95</sort_order>
+                            <source_model>adminhtml/system_config_source_country</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </specificcountry>
+
+                        <threedsecure_heading translate="label">
+                            <label>3D Secure</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>99</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </threedsecure_heading>
+
+                        <threedsecure translate="label comment">
+                            <label>Enable 3D Secure</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>101</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[
+                                The 3D Secure feature enables the shopper to enter a password to confirm their identity with the card issuer. If accepted they then complete their order, and when received by you, you have much more confidence that is genuine and real.<br /><strong>Notice:</strong> To use 3D secure in production your checkout must run over HTTPs. If you accept AMEX Cards, they do not support 3DSecure and will bypass all 3D Secure checks.
+                            ]]></comment>
+                        </threedsecure>
+
+                        <threedsecure_failed_liability translate="label comment">
+                            <label>Failed Liability Shift Action</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/system_config_source_payment_liabilityaction</source_model>
+                            <sort_order>102</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[
+                                Action to complete if the liability shift fails after the 3D secure. If the liability cannot be shifted the merchant is liable for charge backs.<br />
+                                <strong>Request Alternative Payment Method</strong> - Block the payment and inform the customer to choose a different payment method. This will also block any cards that do not support 3DSecure.<br />
+                                <strong>Accept & Mark as Fraud</strong> - Will accept the payment but mark as fraudulent within Magento for manual inspection.<br />
+                                <strong>Accept</strong> - Will accept the payment and be processed as a normal order (this setting is not recommended).
+                            ]]></comment>
+                            <depends>
+                                <threedsecure>1</threedsecure>
+                            </depends>
+                        </threedsecure_failed_liability>
+
+                        <threedsecure_threshold translate="label comment">
+                            <label>3D Secure Threshold</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>105</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[
+                                The threshold which requires a transaction to be passed through 3D secure. Set this to 0 to pass all transactions through 3D secure.
+                            ]]></comment>
+                            <depends>
+                                <threedsecure>1</threedsecure>
+                            </depends>
+                        </threedsecure_threshold>
+
+                        <threedsecure_allowspecific translate="label comment">
+                            <label>3D Secure for Applicable Countries</label>
+                            <frontend_type>allowspecific</frontend_type>
+                            <sort_order>106</sort_order>
+                            <source_model>gene_braintree/system_config_source_payment_threedsecurecountries</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[
+                                Determine when 3D secure should display based on the customers billing country. Cards vaulted using 3D secure will ignore this option.
+                            ]]></comment>
+                            <depends>
+                                <threedsecure>1</threedsecure>
+                            </depends>
+                        </threedsecure_allowspecific>
+
+                        <threedsecure_specificcountry translate="label">
+                            <label>3D Secure for Specific Countries</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <sort_order>110</sort_order>
+                            <source_model>adminhtml/system_config_source_country</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <threedsecure>1</threedsecure>
+                                <threedsecure_allowspecific>1</threedsecure_allowspecific>
+                            </depends>
+                        </threedsecure_specificcountry>
+
+                        <kount translate="label">
+                            <label>Kount</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </kount>
+
+                        <kount_merchant_id translate="label comment">
+                            <label>Kount Merchant ID</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>125</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[
+                                Braintree offers a direct integration with Kount, our partner for providing advanced fraud detection technology. To use this feature, you must be processing at least 2500 transactions per month, and you’ll be subject to additional fees from Kount for their services. To get started, contact accounts@braintreepayments.com. You can view more information <a href="https://developers.braintreepayments.com/javascript+php/guides/fraud-tools">here</a>.
+                            ]]></comment>
+                        </kount_merchant_id>
+
+                        <kount_environment translate="label comment">
+                            <label>Environment</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_environment</source_model>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[
+                                Please specify which Kount environment you're using.
+                            ]]></comment>
+                        </kount_environment>
+
+                        <kount_api_key translate="label comment">
+                            <label>API Key</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>135</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[
+                                Your Kount API authentication token. This can be located through the Kount AWC panel, via Admin > API Keys. Please ensure it has all permissions.
+                            ]]></comment>
+                        </kount_api_key>
+
+                        <skip_advanced_fraud_checking translate="label comment">
+                            <label>Skip Advanced Fraud Checks on Admin Orders</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>136</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[
+                                Prevents the transaction from being sent to Kount for evaluation as part of Advanced Fraud Tools checks, on orders placed through the admin only.
+                            ]]></comment>
+                        </skip_advanced_fraud_checking>
+
+                        <kount_ens_url translate="label comment">
+                            <label>Event Notification System (ENS) URL</label>
+                            <frontend_type>text</frontend_type>
+                            <frontend_model>gene_braintree/adminhtml_system_config_braintree_kount_ens</frontend_model>
+                            <sort_order>140</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[
+                                This is the ENS URL you will need to add into your website in the Kount AWC control panel. This URL must be publicly accessible for the ENS to function correctly. You'll need to add this ENS URL to the 'OPT-IN' website.
+                            ]]></comment>
+                        </kount_ens_url>
+
+                        <kount_ens_ips>
+                            <label>Event Notification System (ENS) Allowed IPs</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>145</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[
+                                The IPs that have access to the ENS endpoint above. These can be individual IP's or ranges separated with commas. To allow from all IPs leave this field empty (not recommended).
+                            ]]></comment>
+                        </kount_ens_ips>
+
+                        <display_heading translate="label">
+                            <label>Display</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>150</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </display_heading>
+
+                        <sort_order translate="label">
+                            <label>Sort Order</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>155</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </sort_order>
+
+                    </fields>
+                </gene_braintree_creditcard>
+
+                <gene_braintree_applepay translate="label comment" module="gene_braintree">
+                    <label>Braintree Payments - Apple Pay</label>
+                    <sort_order>1501</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <comment>
+                        <![CDATA[
+                            <img src="/skin/frontend/base/default/images/gene/braintree/apple-pay-logo.png" width="135" style="margin: 6px 0 10px 0;" /><br />
+                            You must first configure the <strong>Braintree Payments - Configuration</strong> section with your Braintree account details.
+                        ]]>
+                    </comment>
+                    <fields>
+                        <active translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                Apple Pay will only be displayed as a payment option on supported devices regardless of it being enabled. Find out more <a href="https://support.apple.com/en-gb/HT201469">here</a>.
+                                ]]>
+                            </comment>
+                        </active>
+
+                        <title translate="label">
+                            <label>Title</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </title>
+
+                        <express_heading translate="label">
+                            <label>Apple Pay Express</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </express_heading>
+
+                        <express_active translate="label">
+                            <label>Enable Express Checkout</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                Apple Pay Express functionality allows customers to checkout directly with Apple Pay instead of using the default checkout.
+                                ]]>
+                            </comment>
+                        </express_active>
+
+                        <disable_checkout translate="label">
+                            <label>Disable in Checkout</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>55</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                Should we hide the payment method from the standard checkout process? This means Apple Pay will only be available as an express option.
+                                ]]>
+                            </comment>
+                            <depends>
+                                <express_active>1</express_active>
+                            </depends>
+                        </disable_checkout>
+
+                        <express_cart>
+                            <label>Enable in Cart</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><express_active>1</express_active></depends>
+                            <comment>
+                                <![CDATA[
+                                Allow customers to complete their order via Apple Pay express, this will complete the entire quote.
+                                ]]>
+                            </comment>
+                        </express_cart>
+
+                        <express_pdp>
+                            <label>Enable on Product Page</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><express_active>1</express_active></depends>
+                            <comment>
+                                <![CDATA[
+                                Allow customers to checkout directly from the product page using Apple Pay express. This will allow them to only checkout with the currently viewed item.
+                                ]]>
+                            </comment>
+                        </express_pdp>
+
+                        <express_link_guest>
+                            <label>Link Guest Orders to Customers</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>75</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><express_active>1</express_active></depends>
+                            <comment>
+                                <![CDATA[
+                                If an existing customer makes an express order using their customer account email should we link the guest order to their customer account?
+                                ]]>
+                            </comment>
+                        </express_link_guest>
+
+                        <capture_heading translate="label">
+                            <label>Capture</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </capture_heading>
+
+                        <payment_action translate="label comment">
+                            <label>Payment Action</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_paypal_paymentAction</source_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[
+                                <strong>Authorize</strong> - Will only auth the payment and store a token, the transaction will not be settled.<br />
+                                <strong>Authorize & Capture</strong> - We will instantly settle the transaction within the checkout.
+                            ]]></comment>
+                        </payment_action>
+
+                        <capture_action translate="label comment">
+                            <label>Capture Action</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_paypal_captureAction</source_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[
+                                If you're just authorizing transactions you can define at what point they should be submitted for settlement.
+                            ]]></comment>
+                            <depends>
+                                <payment_action>authorize</payment_action>
+                            </depends>
+                        </capture_action>
+
+                        <order_status translate="label">
+                            <label>Complete Order Status</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_order_status_processing</source_model>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </order_status>
+
+                        <features_heading translate="label">
+                            <label>Features</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </features_heading>
+
+                        <allowspecific translate="label">
+                            <label>Payment from Applicable Countries</label>
+                            <frontend_type>allowspecific</frontend_type>
+                            <sort_order>155</sort_order>
+                            <source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </allowspecific>
+
+                        <specificcountry translate="label">
+                            <label>Payment from Specific Countries</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <sort_order>160</sort_order>
+                            <source_model>adminhtml/system_config_source_country</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </specificcountry>
+
+                        <display_heading translate="label">
+                            <label>Display</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>165</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </display_heading>
+
+                        <sort_order translate="label">
+                            <label>Sort Order</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>170</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </sort_order>
+
+                    </fields>
+                </gene_braintree_applepay>
+
+                <gene_braintree_googlepay translate="label comment" module="gene_braintree">
+                    <label>Braintree Payments - Google Pay</label>
+                    <sort_order>1502</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <comment>
+                        <![CDATA[
+                            <img src="/skin/frontend/base/default/images/gene/braintree/google-pay-logo.png" style="margin: 10px 0;" /><br />
+                            You must first configure the <strong>Braintree Payments - Configuration</strong> section with your Braintree account details.
+                        ]]>
+                    </comment>
+                    <fields>
+                        <active translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                    Google Pay will only be displayed as a payment option on supported devices regardless of it being enabled. Find out more <a href="https://articles.braintreepayments.com/guides/payment-methods/google-pay">here</a>.
+                                ]]>
+                            </comment>
+                        </active>
+
+                        <merchant_account_id translate="label">
+                            <label>Merchant Account ID</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <frontend_class>validate-config</frontend_class>
+                            <comment>
+                                <![CDATA[
+                                    Your Merchant Account ID, provided by Google.
+                                ]]>
+                            </comment>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                            <validate>required-entry</validate>
+                        </merchant_account_id>
+
+                        <title translate="label">
+                            <label>Title</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>required-entry</validate>
+                        </title>
+
+                        <accepted_cards translate="label">
+                            <label>Accepted Card Networks</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <sort_order>40</sort_order>
+                            <source_model>gene_braintree/source_googlepay_acceptedCards</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>required-entry</validate>
+                        </accepted_cards>
+
+                        <capture_heading translate="label">
+                            <label>Capture</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </capture_heading>
+
+                        <payment_action translate="label comment">
+                            <label>Payment Action</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_paypal_paymentAction</source_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                    <strong>Authorize</strong> - Will only auth the payment and store a token, the transaction will not be settled.<br />
+                                    <strong>Authorize & Capture</strong> - We will instantly settle the transaction within the checkout.
+                                ]]>
+                            </comment>
+                        </payment_action>
+
+                        <capture_action translate="label comment">
+                            <label>Capture Action</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>gene_braintree/source_paypal_captureAction</source_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[
+                                If you're just authorizing transactions you can define at what point they should be submitted for settlement.
+                            ]]></comment>
+                            <depends>
+                                <payment_action>authorize</payment_action>
+                            </depends>
+                        </capture_action>
+
+                        <order_status translate="label">
+                            <label>Complete Order Status</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_order_status_processing</source_model>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </order_status>
+                    </fields>
+                </gene_braintree_googlepay>
+            </groups>
+        </payment>
+    </sections>
+</config>

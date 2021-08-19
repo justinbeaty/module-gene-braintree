@@ -1,0 +1,146 @@
+<?php
+/* @var $this Gene_Braintree_Block_Creditcard */
+$_code = $this->getMethodCode()
+?>
+<div id="payment_form_<?php echo $_code ?>" style="display:none;" class="form-list">
+
+    <?php echo $this->getSavedChildHtml(); ?>
+
+    <div id="credit-card-form"<?php echo ($this->hasSavedDetails() && $this->getMethod()->isVaultEnabled() ? ' style="display: none;"' : ''); ?> class="loading">
+        <div class="credit-card-loading">
+            <img src="<?php echo $this->getSkinUrl('images/gene/loader.gif'); ?>" />
+            <p><?php echo $this->__('Loading Payment Method'); ?></p>
+        </div>
+        <ul class="form-list braintree-hostedfield">
+            <li>
+                <label for="card-number"><?php echo $this->__('Card Number'); ?></label>
+                <div class="card-input braintree-card-input-field">
+                    <div class="card-type"><img src="<?php echo $this->getSkinUrl('images/gene/braintree/card.png', array('_area' => 'frontend', '_package' => 'base', '_theme' => 'default')) ?>" id="card-type-image" /></div>
+                    <div id="card-number"></div>
+                </div>
+            </li>
+            <li>
+                <label for="expiration-month"><?php echo $this->__('Expiration Date'); ?></label>
+                <div id="braintree-expiration-container">
+                    <div id="expiration-month" class="braintree-input-field braintree-expiration"></div>
+                    <div class="braintree-expiration-seperator">/</div>
+                    <div id="expiration-year" class="braintree-input-field braintree-expiration"></div>
+                </div>
+            </li>
+            <li>
+                <label for="cvv"><?php echo $this->__('CVV'); ?></label>
+                <div id="cvv" class="braintree-input-field braintree-cvv"></div>
+            </li>
+            <?php /* This field is automatically shown by JavaScript based on the merchants AVS settings */ ?>
+            <li class="braintree-avs-postal-code" style="display: none;">
+                <label for="postal-code"><?php echo $this->__('Postal Code'); ?></label>
+                <div id="postal-code" class="braintree-input-field braintree-postal-code"></div>
+            </li>
+            <?php if ($this->canSaveCard()) : ?>
+                <li id="<?php echo $_code ?>_store_in_vault_div">
+                    <input type="checkbox" title="<?php echo $this->__('Save card against customers account') ?>"
+                           class="input-checkbox" id="<?php echo $_code ?>_store_in_vault" name="payment[save_card]"
+                           value="1" style="display: inline-block;"/>
+                    <label for="<?php echo $_code ?>_store_in_vault" style="display: inline-block;margin-left: 2px;">
+                        <?php echo $this->__('Save card against customers account') ?>
+                    </label>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </div>
+
+    <?php /* Do not remove or modify this code, the div is hidden and used to fire the hosted fields tokenization */ ?>
+    <div id="braintree-hosted-submit">
+        <!-- Fields for the payment method -->
+        <input type="text" name="payment[payment_method_nonce]" value="" id="creditcard-payment-nonce" class="validate-fire-hosted" />
+    </div>
+</div>
+
+<script type="text/javascript">
+    if(typeof vzero !== 'undefined') {
+        vzero.creditCardLoaded();
+    }
+</script>
+
+<style type="text/css">
+    .order-billing_method .fieldset {
+        float: left;
+        width: 100%;
+    }
+    /* Hosted Fields */
+    #braintree-hosted-submit {
+        display: none;
+    }
+    .braintree-hostedfield {
+        padding: 4px 0;
+    }
+    .braintree-hostedfield li {
+        padding: 3px 0;
+    }
+    .braintree-hostedfield label {
+        margin-bottom: 4px;
+        display: block;
+        width: 100%;
+    }
+    .braintree-input-field {
+        height: 42px;
+        max-width: 340px;
+        padding: 0 10px;
+        border: 1px solid lightgrey;
+        background: white;
+    }
+    .braintree-input-field.braintree-postal-code {
+        width: 140px;
+    }
+    .braintree-card-input-field {
+        height: 50px;
+        width: 100%;
+        max-width: 372px;
+        border: 1px solid lightgrey;
+        position: relative;
+        background: white;
+    }
+    .braintree-card-input-field .card-type {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        padding: 0 10px 0 8px;
+    }
+    .braintree-card-input-field .card-type img {
+        height: 48px;
+    }
+    .braintree-card-input-field #card-number {
+        float: left;
+        height: 48px;
+        width: 100%;
+        padding-left: 66px;
+        box-sizing: border-box;
+    }
+    #braintree-expiration-container {
+        display: inline-block;
+        *zoom: 1;
+        *display: inline;
+        width: 100%;
+        vertical-align: middle;
+        font-size: 0;
+    }
+    .braintree-expiration {
+        width: 70px;
+        display: inline-block;
+        *zoom: 1;
+        *display: inline;
+    }
+    .braintree-expiration-seperator {
+        vertical-align: top;
+        display: inline-block;
+        *zoom: 1;
+        *display: inline;
+        line-height: 44px;
+        font-size: 30px;
+        padding: 0 8px;
+    }
+    .braintree-cvv {
+        width: 80px;
+    }
+</style>
