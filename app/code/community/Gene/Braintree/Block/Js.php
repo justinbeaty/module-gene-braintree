@@ -291,7 +291,7 @@ class Gene_Braintree_Block_Js extends Gene_Braintree_Block_Assets
             $disallowed[] = "'elv'";
         }
 
-        $return = '';
+        $return = [];
         if ($disallowed) {
             $return[] = 'disallowed: [' . implode(",", $disallowed) . ']';
         } else {
