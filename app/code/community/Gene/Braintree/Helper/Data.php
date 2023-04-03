@@ -100,24 +100,16 @@ class Gene_Braintree_Helper_Data extends Mage_Core_Helper_Abstract
                 'firstName'         => $address->getFirstname(),
                 'lastName'          => $address->getLastname(),
                 'streetAddress'     => $address->getStreet1(),
+                'extendedAddress'   => $address->getStreet2(),
+                'company'           => $address->getCompany(),
                 'locality'          => $address->getCity(),
                 'postalCode'        => $address->getPostcode(),
                 'countryCodeAlpha2' => $address->getCountry()
             );
 
-            // Any extended address?
-            if ($address->getStreet2()) {
-                $return['extendedAddress'] = $address->getStreet2();
-            }
-
             // Region
             if ($address->getRegion()) {
                 $return['region'] = $address->getRegionCode();
-            }
-
-            // Check to see if we have a company
-            if ($address->getCompany()) {
-                $return['company'] = $address->getCompany();
             }
 
             return $return;
