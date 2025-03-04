@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "83144d750a68cabb1367a9fb110a3c60",
+    "content-hash": "8d3051f7737873d410653d3c1c740dfd",
     "packages": [
         {
             "name": "braintree/braintree_php",
-            "version": "6.3.0",
+            "version": "6.24.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/braintree/braintree_php.git",
-                "reference": "69e4fab9896ae084ffed1b6bcd2ed186954d14f9"
+                "reference": "8b5b96630106aff5c6564ace13bddb123ff68891"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/braintree/braintree_php/zipball/69e4fab9896ae084ffed1b6bcd2ed186954d14f9",
-                "reference": "69e4fab9896ae084ffed1b6bcd2ed186954d14f9",
+                "url": "https://api.github.com/repos/braintree/braintree_php/zipball/8b5b96630106aff5c6564ace13bddb123ff68891",
+                "reference": "8b5b96630106aff5c6564ace13bddb123ff68891",
                 "shasum": ""
             },
             "require": {
@@ -51,18 +51,18 @@
             "description": "Braintree PHP Client Library",
             "support": {
                 "issues": "https://github.com/braintree/braintree_php/issues",
-                "source": "https://github.com/braintree/braintree_php/tree/6.3.0"
+                "source": "https://github.com/braintree/braintree_php/tree/6.24.0"
             },
-            "time": "2021-06-21T21:36:45+00:00"
+            "time": "2025-02-28T18:43:37+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
-    "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "platform": {},
+    "platform-dev": {},
+    "plugin-api-version": "2.6.0"
 }
