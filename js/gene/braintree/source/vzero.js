@@ -579,6 +579,7 @@ vZero.prototype = {
 
             // Verify the nonce through 3Ds
             this.verify3dSecureNonce(payload.nonce, {
+                bin: payload.details && payload.details.bin,
                 onSuccess: function (response) {
                     this.updateNonce(response.nonce);
 
@@ -1163,6 +1164,7 @@ vZero.prototype = {
                 var verifyOptions = {
                     amount: this.amount,
                     nonce: nonce,
+                    bin: options.bin,
                     billingAddress: billingAddress,
                     additionalInformation: additionalInformation || null,
                     onLookupComplete: function (data, next) {
@@ -1232,6 +1234,7 @@ vZero.prototype = {
         if (paymentNonce) {
             // Verify the nonce via 3d secure
             this.verify3dSecureNonce(paymentNonce, {
+                bin: $$("#creditcard-saved-accounts input:checked[type=radio]").first().getAttribute("data-threedsecure-bin"),
                 onSuccess: function (response) {
                     // Store threeDSecure token and nonce in form
                     $('creditcard-payment-nonce').removeAttribute('disabled');

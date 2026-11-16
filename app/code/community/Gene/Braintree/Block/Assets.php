@@ -10,7 +10,7 @@ class Gene_Braintree_Block_Assets extends Mage_Core_Block_Template
     /**
      * Version of Braintree SDK to be included
      */
-    const SDK_VERSION = '3.48.0';
+    const SDK_VERSION = '3.147.0';
 
     /**
      * Record the current version
