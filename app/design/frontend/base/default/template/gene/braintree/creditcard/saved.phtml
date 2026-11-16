@@ -10,7 +10,7 @@
             <tr valign="middle">
                 <td width="20">
                     <?php if($this->getMethod()->is3DEnabled()): ?>
-                        <input type="radio" name="payment[card_payment_method_token]" id="<?php echo $savedDetail->token; ?>" data-token="<?php echo $savedDetail->token; ?>" data-threedsecure-nonce="<?php echo $this->getMethod()->getThreeDSecureVaultNonce($savedDetail->token); ?>" value="threedsecure"<?php echo ($count == 0 ? ' checked="checked"' : ''); ?>/>
+                        <input type="radio" name="payment[card_payment_method_token]" id="<?php echo $savedDetail->token; ?>" data-token="<?php echo $savedDetail->token; ?>" data-threedsecure-bin="<?php echo $this->escapeHtml($savedDetail->bin); ?>" data-threedsecure-nonce="<?php echo $this->getMethod()->getThreeDSecureVaultNonce($savedDetail->token); ?>" value="threedsecure"<?php echo ($count == 0 ? ' checked="checked"' : ''); ?>/>
                     <?php else: ?>
                         <input type="radio" name="payment[card_payment_method_token]" id="<?php echo $savedDetail->token; ?>" value="<?php echo $savedDetail->token; ?>"<?php echo ($count == 0 ? ' checked="checked"' : ''); ?>/>
                     <?php endif; ?>
